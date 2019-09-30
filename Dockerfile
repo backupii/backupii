@@ -1,4 +1,4 @@
-FROM ruby:2.4.3
+FROM ruby:2.6.3
 
 ## 1. Image metadata ##
  LABEL maintainer="stuart@stuartellis.name" \
@@ -19,3 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends $APP_DEPS
 
 ENV APP_HOME /usr/src/backup
 WORKDIR $APP_HOME
+
+# Update bundler to version 2
+RUN gem install bundler
