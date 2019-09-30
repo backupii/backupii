@@ -8,9 +8,9 @@ To report a bug, use the [GitHub issue tracker](https://github.com/backupii/back
 check the Open issues, and create a new issue if you do not see a report that matches the bug that
 you have found.
 
-Backupii is used with many different systems and configurations, so the first step for us to solve a
+BackupII is used with many different systems and configurations, so the first step for us to solve a
 problem is knowing how to reproduce it. You can help us solve your issue by including the versions
-of Ruby, Backupii and the operating system on the computer that you used.
+of Ruby, BackupII and the operating system on the computer that you used.
 
 To submit a bug fix, please [create a Pull Request](https://github.com/backupii/backupii/compare).
 Always develop changes against the `master` branch. Read the Pull Requests section below for more
@@ -49,3 +49,20 @@ In addition to contributing code, you can help to triage issues. This can includ
 reports or asking for vital information, such as version numbers or reproduction instructions. If
 you would like to start triaging issues, one easy way to get started is to [subscribe to backupii on
 CodeTriage](https://www.codetriage.com/backupii/backupii).
+
+## Getting started
+
+BackupII is a Ruby app that is unit and integration tested with Rspec and linted with Rubocop:
+
+```bash
+bundle
+bundle exec rubocop
+bundle exec rspec spec
+bundle exec rspec integration
+```
+
+There is also a [Dockerfile](Dockerfile) and respective Rake tasks to run all the tests in Docker:
+
+```bash
+bundle exec rake docker:prepare docker:spec docker:integration
+```

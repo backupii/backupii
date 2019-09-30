@@ -14,7 +14,7 @@ protocols/services, syncers, compressors, encryptors and notifiers
 which you can mix and match. It was built with modularity,
 extensibility and simplicity in mind.
 
-[Installation][] &middot; [Release Notes][] &middot; [Documentation][] &middot; [Issues][]
+[Installation][] &middot; [Release Notes][] &middot; [Documentation][] &middot; [Issues][] &middot; [Contributing and getting started][]
 
 ## Project Status: Forking just started ##
 
@@ -32,5 +32,6 @@ Released under the **MIT** [LICENSE](LICENSE).
 [Release Notes]: http://backupii.github.io/backupii/v4/release-notes
 [Documentation]: http://backupii.github.io/backupii/v4
 [Issues]: https://github.com/backupii/backupii/issues
+[Contributing and getting started]: CONTRIBUTING.md
 [Maintainers wanted]: https://github.com/backupii/backupii/issues/1
 [Michael van Rooijen]: http://github.com/mrrooijen
