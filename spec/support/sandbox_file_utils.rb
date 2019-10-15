@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Provides the ability to perform +FileUtils+ actions, while restricting
 # any destructive actions outside of the specified +sandbox_path+.

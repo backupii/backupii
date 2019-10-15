@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Syncer
     module Cloud
@@ -33,7 +35,7 @@ module Backup
           @retry_waitsec  ||= 30
 
           @path ||= "backups"
-          @path = path.sub(/^\//, "")
+          @path = path.sub(%r{^/}, "")
         end
 
         def perform!
@@ -50,7 +52,9 @@ module Backup
           Logger.info "\s\sTransferred Files: #{@transfer_count}"
           Logger.info "\s\s#{orphans_result}"
           Logger.info "\s\sUnchanged Files: #{@unchanged_count}"
-          Logger.warn "\s\sSkipped Files: #{@skipped_count}" if @skipped_count > 0
+          if @skipped_count > 0
+            Logger.warn "\s\sSkipped Files: #{@skipped_count}"
+          end
           log!(:finished)
         end
 

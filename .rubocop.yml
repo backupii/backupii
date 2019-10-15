@@ -1,11 +1,12 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.3
   Include:
     - "Gemfile"
     - "Rakefile"
-    - "backup.gemspec"
+    - "backupii.gemspec"
+    - "**/*.rb"
   Exclude:
     - "tmp/**/*"
     - "vagrant/**/*"
@@ -13,38 +14,90 @@ AllCops:
   UseCache: true
   CacheRootDirectory: ./tmp
 
-# Metrics/LineLength:
-#   Max: 80
 
+# Metrics/MethodLength:
+#   Max: 30
+
+Metrics/ClassLength:
+  Enabled: false
+  
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: err
+  
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
+  
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented  
+
+Layout/AlignHash:
+  EnforcedLastArgumentHashStyle: ignore_implicit
+
+Layout/IndentFirstArrayElement:
+  EnforcedStyle: consistent  
+  
+Style/RegexpLiteral:
+  EnforcedStyle: percent_r
+
+Style/NumericPredicate:
+  Enabled: false
+  
+Style/CommentedKeyword:
+  Enabled: false
+  
 Style/Documentation:
   Enabled: false
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
-Style/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
-
-Style/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
-
-Style/MultilineOperationIndentation:
-  EnforcedStyle: indented
-
 Style/HashSyntax:
   EnforcedStyle: ruby19
-
-Style/AlignHash:
-  EnforcedLastArgumentHashStyle: ignore_implicit
-
-Style/IndentArray:
-  EnforcedStyle: consistent
 
 Style/FormatString:
   EnforcedStyle: sprintf
 
 Style/SymbolArray:
   Enabled: false
+
+# Disabled to support older ruby versions as the &. operator comes with 2.3.0
+Style/SafeNavigation:
+  Enabled: false
+  
+#
+# FIXME: Enable those and fix the warnings
+#
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false  
+
+# Move to single_quotes
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Not sure if it should be enabled
+Style/GuardClause:
+  Enabled: false
+  
+Style/RescueStandardError:
+  Enabled: false
+  
+Lint/RescueException:
+  Enabled: false
+
+Naming/PredicateName:
+  Enabled: false
+  

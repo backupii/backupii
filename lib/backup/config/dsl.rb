@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Config
     # Context for loading user config.rb and model files.
@@ -10,8 +12,9 @@ module Backup
 
         # List the available database, storage, syncer, compressor, encryptor
         # and notifier constants. These are used to define constant names within
-        # Backup::Config::DSL so that users may use a constant instead of a string.
-        # Nested namespaces are represented using Hashs. Deep nesting supported.
+        # Backup::Config::DSL so that users may use a constant instead of a
+        # string. Nested namespaces are represented using Hashs. Deep nesting
+        # supported.
         #
         # Example, instead of:
         #  database "MySQL" do |mysql|
@@ -25,23 +28,21 @@ module Backup
           create_modules(
             DSL,
             [ # Databases
-              ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Riak", "OpenLDAP", "SQLite"],
+              %w[MySQL PostgreSQL MongoDB Redis Riak OpenLDAP SQLite],
               # Storages
-              ["S3", "CloudFiles", "Dropbox", "FTP",
-               "SFTP", "SCP", "RSync", "Local", "Qiniu"],
+              %w[S3 CloudFiles Dropbox FTP SFTP SCP RSync Local Qiniu],
               # Compressors
-              ["Gzip", "Bzip2", "Custom"],
+              %w[Gzip Bzip2 Custom],
               # Encryptors
-              ["OpenSSL", "GPG"],
+              %w[OpenSSL GPG],
               # Syncers
               [
-                { "Cloud" => ["CloudFiles", "S3"] },
-                { "RSync" => ["Push", "Pull", "Local"] }
+                { "Cloud" => %w[CloudFiles S3] },
+                { "RSync" => %w[Push Pull Local] }
               ],
               # Notifiers
-              ["Mail", "Twitter", "Campfire", "Prowl",
-               "Hipchat", "PagerDuty", "Pushover", "HttpPost", "Nagios",
-               "Slack", "FlowDock", "Zabbix", "Ses", "DataDog", "Command"]
+              %w[Mail Twitter Campfire Prowl Hipchat PagerDuty Pushover
+                 HttpPost Nagios Slack FlowDock Zabbix Ses DataDog Command]
             ]
           )
         end
@@ -84,7 +85,7 @@ module Backup
 
       # Allows users to create preconfigured models.
       def preconfigure(name, &block)
-        unless name.is_a?(String) && name =~ /^[A-Z]/
+        unless name.is_a?(String) && name =~ %r{^[A-Z]}
           raise Error, "Preconfigured model names must be given as a string " \
                         "and start with a capital letter."
         end

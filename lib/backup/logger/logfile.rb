@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   class Logger
     class Logfile
@@ -105,6 +107,7 @@ module Backup
         if File.exist?(path) && !File.writable?(path)
           raise Error, "Log File at '#{path}' is not writable"
         end
+
         path
       end
 
@@ -118,7 +121,7 @@ module Backup
           File.open(@logfile + "~", "r") do |io_in|
             File.open(@logfile, "w") do |io_out|
               io_in.seek(-@options.max_bytes, IO::SEEK_END) && io_in.gets
-              while line = io_in.gets
+              while (line = io_in.gets)
                 io_out.puts line
               end
             end

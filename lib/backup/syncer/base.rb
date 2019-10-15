@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Syncer
     class Base
@@ -34,6 +36,7 @@ module Backup
       # Syntactical suger for the DSL for adding directories
       def directories(&block)
         return @directories unless block_given?
+
         instance_eval(&block)
       end
 

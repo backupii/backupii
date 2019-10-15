@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Storage
     class Base
@@ -5,7 +7,7 @@ module Backup
 
       ##
       # Base path on the remote where backup package files will be stored.
-      attr_accessor :path
+      attr_reader :path
 
       ##
       # Number of backups to keep or time until which to keep.
@@ -32,10 +34,14 @@ module Backup
       def initialize(model, storage_id = nil, &block)
         @model = model
         @package = model.package
-        @storage_id = storage_id.to_s.gsub(/\W/, "_") if storage_id
+        @storage_id = storage_id.to_s.gsub(%r{\W}, "_") if storage_id
 
         load_defaults!
         instance_eval(&block) if block_given?
+      end
+
+      def path=(value)
+        @path = value.dup
       end
 
       def perform!
@@ -55,7 +61,7 @@ module Backup
         path.empty? ? File.join(pkg.trigger, pkg.time) :
                       File.join(path, pkg.trigger, pkg.time)
       end
-      alias :remote_path_for :remote_path
+      alias remote_path_for remote_path
 
       def storage_name
         @storage_name ||= self.class.to_s.sub("Backup::", "") +

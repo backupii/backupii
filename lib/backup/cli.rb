@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Build the Backup Command Line Interface using Thor
 module Backup
@@ -11,8 +13,9 @@ module Backup
     # The only required option is the --trigger [-t].
     # If --config-file, --data-path, --tmp-path or --log-path
     # aren't specified they will fallback to defaults.
-    # If --root-path is given, it will be used as the base path for our defaults,
-    # as well as the base path for any option specified as a relative path.
+    # If --root-path is given, it will be used as the base path for our
+    # defaults, as well as the base path for any option specified as
+    # a relative path.
     # Any option given as an absolute path will be used "as-is".
     #
     # This command will exit with one of the following status codes:
@@ -27,7 +30,7 @@ module Backup
     # and no triggers will be performed.
     desc "perform", "Performs the backup for the specified trigger(s)."
 
-    long_desc <<-EOS.gsub(/^ +/, "")
+    long_desc <<-EOS.gsub(%r{^ +}, "")
       Performs the backup for the specified trigger(s).
 
       You may perform multiple backups by providing multiple triggers,
@@ -109,6 +112,7 @@ module Backup
       default: false,
       desc: "Check configuration for errors or warnings."
 
+    # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
     def perform
       check if options[:check] # this will exit()
 
@@ -141,9 +145,8 @@ module Backup
         Logger.start!
       rescue Exception => err
         Logger.error Error.wrap(err)
-        unless Helpers.is_backup_error? err
-          Logger.error err.backtrace.join("\n")
-        end
+        Logger.error err.backtrace.join("\n") unless Helpers.backup_error? err
+
         # Logger configuration will be ignored
         # and messages will be output to the console only.
         Logger.abort!
@@ -184,7 +187,7 @@ module Backup
 
       exit(errors ? 2 : 1) if errors || warnings
     end
-
+    # rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
     ##
     # [Check]
     #
@@ -204,7 +207,7 @@ module Backup
     # If there are Errors or Warnings, it will exit(1).
     desc "check", "Check for configuration errors or warnings"
 
-    long_desc <<-EOS.gsub(/^ +/, "")
+    long_desc <<-EOS.gsub(%r{^ +}, "")
       Loads your 'config.rb' file and all models and reports any
       errors or warnings with your configuration, including missing
       dependencies and the use of any deprecated settings.
@@ -221,9 +224,7 @@ module Backup
         Config.load(options)
       rescue Exception => err
         Logger.error Error.wrap(err)
-        unless Helpers.is_backup_error? err
-          Logger.error err.backtrace.join("\n")
-        end
+        Logger.error err.backtrace.join("\n") unless Helpers.backup_error? err
       end
 
       if Logger.has_warnings? || Logger.has_errors?
@@ -246,7 +247,7 @@ module Backup
     # will generate a pre-populated model with a base MongoDB setup
     desc "generate:model", "Generates a Backup model file."
 
-    long_desc <<-EOS.gsub(/^ +/, "")
+    long_desc <<-EOS.gsub(%r{^ +}, "")
       Generates a Backup model file.
 
       If your configuration file is not in the default location at
@@ -287,9 +288,12 @@ module Backup
       desc: "Add Splitter to the model"
 
     define_method "generate:model" do
-      opts = options.merge(trigger: options[:trigger].gsub(/\W/, "_"))
-      config_file = opts[:config_file] ?
-                    File.expand_path(opts.delete(:config_file)) : Config.config_file
+      opts = options.merge(trigger: options[:trigger].gsub(%r{\W}, "_"))
+      config_file = if opts[:config_file]
+                      File.expand_path(opts.delete(:config_file))
+                    else
+                      Config.config_file
+                    end
       models_path = File.join(File.dirname(config_file), "models")
       model_file  = File.join(models_path, "#{opts[:trigger]}.rb")
 
@@ -311,7 +315,7 @@ module Backup
     # Generates the main configuration file
     desc "generate:config", "Generates the main Backup configuration file"
 
-    long_desc <<-EOS.gsub(/^ +/, "")
+    long_desc <<-EOS.gsub(%r{^ +}, "")
       Path to the Backup configuration file to generate.
 
       Defaults to:
@@ -324,9 +328,11 @@ module Backup
       desc: "Path to the Backup configuration file to generate."
 
     define_method "generate:config" do
-      config_file = options[:config_file] ?
-          File.expand_path(options[:config_file]) : Config.config_file
-
+      config_file = if options[:config_file]
+                      File.expand_path(options[:config_file])
+                    else
+                      Config.config_file
+                    end
       FileUtils.mkdir_p(File.dirname(config_file))
       if Helpers.overwrite?(config_file)
         File.open(config_file, "w") do |file|
@@ -353,7 +359,7 @@ module Backup
 
           $stderr.print "A file already exists at '#{path}'.\n" \
                         "Do you want to overwrite? [y/n] "
-          /^[Yy]/ =~ $stdin.gets
+          %r{^[Yy]} =~ $stdin.gets
         end
 
         def exec!(cmd)
@@ -361,7 +367,7 @@ module Backup
           exec(cmd)
         end
 
-        def is_backup_error?(error)
+        def backup_error?(error)
           error.class.ancestors.include? Backup::Error
         end
       end

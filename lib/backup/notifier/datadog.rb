@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dogapi"
 
 module Backup
@@ -41,7 +43,8 @@ module Backup
       attr_accessor :aggregation_key
 
       ##
-      # The source_type for the event (nagios, hudson, jenkins, user, my apps, feed, chef, puppet, git, bitbucket, fabric, capistrano)
+      # The source_type for the event (nagios, hudson, jenkins, user, my apps,
+      # feed, chef, puppet, git, bitbucket, fabric, capistrano)
       attr_accessor :source_type_name
 
       def initialize(model, &block)

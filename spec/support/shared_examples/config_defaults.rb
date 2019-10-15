@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "a class that includes Config::Helpers" do
   describe "setting defaults" do
     let(:accessor_names) do

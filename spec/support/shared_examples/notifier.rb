@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "a subclass of Notifier::Base" do
   let(:notifier) { described_class.new(model) }
   let(:notifier_name) { described_class.name.sub("Backup::", "") }

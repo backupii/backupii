@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ostruct"
 
 module Backup
@@ -29,7 +31,7 @@ module Backup
 
         def log_deprecation_warning(name, deprecation)
           msg = "#{self}##{name} has been deprecated as of " \
-              "backup v.#{deprecation[:version]}"
+            "backup v.#{deprecation[:version]}".dup
           msg << "\n#{deprecation[:message]}" if deprecation[:message]
           Logger.warn Config::Error.new(<<-EOS)
             [DEPRECATION WARNING]
@@ -79,7 +81,7 @@ module Backup
         self.class.defaults._attributes.each do |name|
           val = self.class.defaults.send(name)
           val = val.dup rescue val
-          send(:"#{ name }=", val)
+          send(:"#{name}=", val)
         end
       end
 
@@ -103,7 +105,7 @@ module Backup
       #
       def method_missing(name, *args)
         deprecation = nil
-        if method = name.to_s.chomp!("=")
+        if (method = name.to_s.chomp!("="))
           if (len = args.count) != 1
             raise ArgumentError,
               "wrong number of arguments (#{len} for 1)", caller(1)

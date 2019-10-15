@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "net/sftp"
 
 module Backup
@@ -18,8 +20,8 @@ module Backup
 
         @ssh_options ||= {}
         @port        ||= 22
-        @path        ||= "backups"
-        path.sub!(/^~\//, "")
+        @path        ||= "backups".dup
+        path.sub!(%r{^~/}, "")
       end
 
       private

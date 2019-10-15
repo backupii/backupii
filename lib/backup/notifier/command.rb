@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Notifier
     class Command < Base
@@ -64,7 +66,7 @@ module Backup
         if arg.respond_to?(:call)
           arg.call(model, status)
         else
-          arg.gsub(/%(\w)/) do |match|
+          arg.gsub(%r{%(\w)}) do |match|
             ph = match[1]
             val = case ph.downcase
                   when "l"
@@ -78,7 +80,7 @@ module Backup
                   when "s"
                     status.to_s
                   end
-            val.capitalize! if ph == ph.upcase
+            val = val.capitalize if ph == ph.upcase
             val
           end
         end

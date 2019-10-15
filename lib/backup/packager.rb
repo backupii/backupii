@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Packager
     class Error < Backup::Error; end

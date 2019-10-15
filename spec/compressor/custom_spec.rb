@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 describe Backup::Compressor::Custom do
@@ -74,8 +76,8 @@ describe Backup::Compressor::Custom do
     context "when pre-configured defaults have been set" do
       before do
         Backup::Compressor::Custom.defaults do |c|
-          c.command   = "default_command"
-          c.extension = "default_extension"
+          c.command   = "default_command".dup
+          c.extension = "default_extension".dup
         end
       end
 

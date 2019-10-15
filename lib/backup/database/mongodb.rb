@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class MongoDB < Base
@@ -89,10 +91,10 @@ module Backup
       # If successful, +dump_packaging_path+ is removed.
       def package!
         pipeline = Pipeline.new
-        dump_ext = "tar"
+        dump_ext = "tar".dup
 
         pipeline << "#{utility(:tar)} -cf - " \
-            "-C '#{dump_path}' '#{dump_filename}'"
+                    "-C '#{dump_path}' '#{dump_filename}'"
 
         if model.compressor
           model.compressor.compress_with do |command, ext|
@@ -125,6 +127,7 @@ module Backup
 
       def name_option
         return unless name
+
         "--db='#{name}'"
       end
 
@@ -156,7 +159,7 @@ module Backup
       end
 
       def lock_database
-        lock_command = <<-EOS.gsub(/^ +/, "")
+        lock_command = <<-EOS.gsub(%r{^ +}, "")
           echo 'use admin
           db.setProfilingLevel(0)
           db.fsyncLock()' | #{mongo_shell}
@@ -166,7 +169,7 @@ module Backup
       end
 
       def unlock_database
-        unlock_command = <<-EOS.gsub(/^ +/, "")
+        unlock_command = <<-EOS.gsub(%r{^ +}, "")
           echo 'use admin
           db.fsyncUnlock()' | #{mongo_shell}
         EOS

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "qiniu"
 
 module Backup
@@ -58,7 +60,8 @@ module Backup
       end
 
       def config_credentials
-        ::Qiniu.establish_connection!(access_key: access_key, secret_key: secret_key)
+        ::Qiniu.establish_connection!(access_key: access_key,
+                                      secret_key: secret_key)
       end
     end
   end

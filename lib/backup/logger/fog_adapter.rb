@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # require only the logger
 require "formatador"
 require "fog/core/logger"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/cloud_io/base"
 require "fog"
 require "digest/md5"
@@ -168,7 +170,7 @@ module Backup
         parts = []
         File.open(src, "r") do |file|
           part_number = 0
-          while data = file.read(chunk_bytes)
+          while (data = file.read(chunk_bytes))
             part_number += 1
             md5 = Base64.encode64(Digest::MD5.digest(data)).chomp
 
@@ -180,7 +182,7 @@ module Backup
               parts << resp.headers["ETag"]
             end
 
-            if i = progress.rindex(part_number)
+            if (i = progress.rindex(part_number))
               Logger.info "\s\s...#{i + 1}0% Complete..."
             end
           end
@@ -192,7 +194,8 @@ module Backup
         Logger.info "\s\sComplete Multipart '#{bucket}/#{dest}'"
 
         with_retries("POST '#{bucket}/#{dest}' (Complete)") do
-          resp = connection.complete_multipart_upload(bucket, dest, upload_id, parts)
+          resp = connection.complete_multipart_upload(bucket, dest,
+                                                      upload_id, parts)
           raise Error, <<-EOS if resp.body["Code"]
             The server returned the following error:
             #{resp.body["Code"]}: #{resp.body["Message"]}
@@ -232,7 +235,7 @@ module Backup
 
         def initialize(cloud_io, data)
           @cloud_io = cloud_io
-          @key  = data["Key"]
+          @key = data["Key"]
           @etag = data["ETag"]
           @storage_class = data["StorageClass"]
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class Riak < Base
@@ -40,7 +42,8 @@ module Backup
 
         if model.compressor
           model.compressor.compress_with do |command, ext|
-            dump_file << "-#{node}" # `riak-admin` appends `node` to the filename.
+            # `riak-admin` appends `node` to the filename.
+            dump_file << "-#{node}"
             run("#{command} -c '#{dump_file}' > '#{dump_file + ext}'")
             FileUtils.rm_f(dump_file)
           end

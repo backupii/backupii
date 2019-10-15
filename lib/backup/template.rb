@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "erb"
 
 module Backup
@@ -6,8 +8,8 @@ module Backup
     attr_accessor :binding
 
     ##
-    # Creates a new instance of the Backup::Template class
-    # and optionally takes an argument that can be either a binding object, a Hash or nil
+    # Creates a new instance of the Backup::Template class and optionally takes
+    # an argument that can be either a binding object, a Hash or nil
     def initialize(object = nil)
       @binding =
         if object.is_a?(Binding)
@@ -18,13 +20,15 @@ module Backup
     end
 
     ##
-    # Renders the provided file (in the context of the binding if any) to the console
+    # Renders the provided file (in the context of the binding if any) to the
+    # console
     def render(file)
       puts result(file)
     end
 
     ##
-    # Returns a String object containing the contents of the file (in the context of the binding if any)
+    # Returns a String object containing the contents of the file (in the
+    # context of the binding if any)
     def result(file)
       ERB.new(file_contents(file), nil, "<>").result(binding)
     end

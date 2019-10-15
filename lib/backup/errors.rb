@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   # Provides cascading errors with formatted messages.
   # See the specs for details.
@@ -13,7 +15,7 @@ module Backup
     def initialize(obj = nil, wrapped_exception = nil)
       @wrapped_exception = wrapped_exception
       msg = (obj.respond_to?(:to_str) ? obj.to_str : obj.to_s)
-        .gsub(/^ */, "  ").strip
+        .gsub(%r{^ *}, "  ").strip
       msg = clean_name(self.class.name) + (msg.empty? ? "" : ": #{msg}")
 
       if wrapped_exception
@@ -39,7 +41,7 @@ module Backup
     private
 
     def clean_name(name)
-      name.sub(/^Backup::/, "")
+      name.sub(%r{^Backup::}, "")
     end
   end
 

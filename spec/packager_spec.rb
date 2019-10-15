@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 describe "Backup::Packager" do
@@ -114,8 +116,8 @@ describe "Backup::Packager" do
       expect(packager).to receive(:utility).with(:tar).and_return("tar")
       packager.instance_variable_set(:@package, package)
       packager.instance_variable_set(:@pipeline, pipeline)
-      package.trigger = "model_trigger"
-      package.extension = "tar"
+      package.trigger = "model_trigger".dup
+      package.extension = "tar".dup
     end
 
     context "when no encryptor or splitter are defined" do

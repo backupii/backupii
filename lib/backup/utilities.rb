@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Utilities
     class Error < Backup::Error; end
@@ -113,7 +115,8 @@ module Backup
 
       def gnu_tar?
         return @gnu_tar unless @gnu_tar.nil?
-        @gnu_tar = !!run("#{utility(:tar)} --version").match(/GNU/)
+
+        @gnu_tar = !!run("#{utility(:tar)} --version").match(%r{GNU})
       end
 
       def utilities
@@ -184,8 +187,8 @@ module Backup
             out = stdout.read.strip
             err = stderr.read.strip
           end
-        rescue Exception => e
-          raise Error.wrap(e, "Failed to execute '#{name}'")
+        rescue Exception => err
+          raise Error.wrap(err, "Failed to execute '#{name}'")
         end
 
         unless ps.success?
@@ -216,14 +219,13 @@ module Backup
     # Allows these utility methods to be included in other classes,
     # while allowing them to be stubbed in spec_helper for all specs.
     module Helpers
+      private
+
       [:utility, :command_name, :run].each do |name|
         define_method name do |arg|
           Utilities.send(name, arg)
         end
-        private name
       end
-
-      private
 
       def gnu_tar?
         Utilities.gnu_tar?

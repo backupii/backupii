@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/config/dsl"
 require "backup/config/helpers"
 
@@ -9,7 +11,7 @@ module Backup
       config_file: "config.rb",
       data_path: ".data",
       tmp_path: ".tmp"
-    }
+    }.freeze
 
     class << self
       include Utilities::Helpers
@@ -26,7 +28,7 @@ module Backup
 
         config = File.read(config_file)
         version = Backup::VERSION.split(".").first
-        unless config =~ /^# Backup v#{ version }\.x Configuration$/
+        unless config =~ %r{^# Backup v#{version}\.x Configuration$}
           raise Error, <<-EOS
             Invalid Configuration File
             The configuration file at '#{config_file}'
@@ -43,7 +45,8 @@ module Backup
         update(dsl._config_options)  # from config.rb
         update(options)              # command line takes precedence
 
-        Dir[File.join(File.dirname(config_file), "models", "*.rb")].each do |model|
+        dirs = Dir[File.join(File.dirname(config_file), "models", "*.rb")]
+        dirs.each do |model|
           dsl.instance_eval(File.read(model), model)
         end
       end
@@ -81,13 +84,14 @@ module Backup
             Path was: #{path}
           EOS
         end
+
         @root_path = path
       end
 
       def set_path_variable(name, path, ending, root_path)
         # strip any trailing '/' in case the user supplied this as part of
         # an absolute path, so we can match it against File.expand_path()
-        path = path.to_s.sub(/\/\s*$/, "").lstrip
+        path = path.to_s.sub(%r{/\s*$}, "").lstrip
         new_path = false
         # If no path is given, the variable will not be set/updated
         # unless a root_path was given. In which case the value will
@@ -95,9 +99,9 @@ module Backup
         if path.empty?
           new_path = File.join(root_path, ending) if root_path
         else
-          # When a path is given, the variable will be set/updated.
-          # If the path is relative, it will be joined with root_path (if given),
-          # or expanded relative to PWD.
+          # When a path is given, the variable will be set/updated. If the path
+          # is relative, it will be joined with root_path (if given), or
+          # expanded relative to PWD.
           new_path = File.expand_path(path)
           unless path == new_path
             new_path = File.join(root_path, path) if root_path

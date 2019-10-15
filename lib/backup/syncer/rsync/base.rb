@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Syncer
     module RSync
@@ -20,7 +22,10 @@ module Backup
         ##
         # Common base command for Local/Push/Pull
         def rsync_command
-          utility(:rsync) << archive_option << mirror_option << exclude_option <<
+          utility(:rsync).dup <<
+            archive_option <<
+            mirror_option <<
+            exclude_option <<
             " #{Array(additional_rsync_options).join(" ")}".rstrip
         end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Storage
     class RSync < Base
@@ -58,12 +60,14 @@ module Backup
       # Used to supply a String or Array of options to be passed to the SSH
       # command in `:ssh` and `:ssh_daemon` modes.
       #
-      # For example, if you need to supply a specific SSH key for the `ssh_user`,
-      # you would set this to: "-i '/path/to/id_rsa'". Which would produce:
+      # For example, if you need to supply a specific SSH key for the
+      # `ssh_user`, you would set this to: "-i '/path/to/id_rsa'". Which would
+      # produce:
       #
       #   rsync -e "ssh -p 22 -i '/path/to/id_rsa'"
       #
-      # Arguments may be single-quoted, but should not contain any double-quotes.
+      # Arguments may be single-quoted, but should not contain any
+      # double-quotes.
       #
       # Used only for `:ssh` and `:ssh_daemon` modes.
       attr_accessor :additional_ssh_options
@@ -157,7 +161,7 @@ module Backup
       def remote_path
         @remote_path ||= begin
           if host
-            path.sub(/^~\//, "").sub(/\/$/, "")
+            path.sub(%r{^~/}, "").sub(%r{/$}, "")
           else
             File.expand_path(path)
           end
@@ -175,6 +179,7 @@ module Backup
       def create_remote_path
         if host
           return unless mode == :ssh
+
           run "#{utility(:ssh)} #{ssh_transport_args} #{host} " +
             %("mkdir -p '#{remote_path}'")
         else
@@ -197,7 +202,7 @@ module Backup
 
       def rsync_command
         @rsync_command ||= begin
-          cmd = utility(:rsync) << " --archive" <<
+          cmd = utility(:rsync).dup << " --archive" <<
             " #{Array(additional_rsync_options).join(" ")}".rstrip
           cmd << compress_option << password_option << transport_options if host
           cmd
@@ -224,7 +229,7 @@ module Backup
       end
 
       def ssh_transport_args
-        args = "-p #{port} "
+        args = "-p #{port} ".dup
         args << "-l #{ssh_user} " if ssh_user
         args << Array(additional_ssh_options).join(" ")
         args.rstrip

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   class Model
     class Error < Backup::Error; end
@@ -17,7 +19,7 @@ module Backup
       def find_by_trigger(trigger)
         trigger = trigger.to_s
         if trigger.include?("*")
-          regex = /^#{ trigger.gsub('*', '(.*)') }$/
+          regex = %r{^#{trigger.gsub('*', '(.*)')}$}
           all.select { |model| regex =~ model.trigger }
         else
           all.select { |model| trigger == model.trigger }
@@ -286,6 +288,7 @@ module Backup
     # The duration of the backup process (in format: HH:MM:SS)
     def duration
       return unless finished_at
+
       elapsed_time(started_at, finished_at)
     end
 
@@ -321,18 +324,20 @@ module Backup
     end
 
     ##
-    # Attempts to use all configured Storages, even if some of them result in exceptions.
-    # Returns true or raises first encountered exception.
+    # Attempts to use all configured Storages, even if some of them result in
+    # exceptions. Returns true or raises first encountered exception.
     def store!
       storage_results = storages.map do |storage|
         begin
           storage.perform!
-        rescue => ex
-          ex
+        rescue => err
+          err
         end
       end
 
-      first_exception, *other_exceptions = storage_results.select { |result| result.is_a? Exception }
+      first_exception, *other_exceptions = storage_results.select do |result|
+        result.is_a? Exception
+      end
 
       if first_exception
         other_exceptions.each do |exception|
@@ -370,7 +375,7 @@ module Backup
     #
     def get_class_from_scope(scope, name)
       klass = scope
-      name = name.to_s.sub(/^Backup::Config::DSL::/, "")
+      name = name.to_s.sub(%r{^Backup::Config::DSL::}, "")
       name.split("::").each do |chunk|
         klass = klass.const_get(chunk)
       end
@@ -442,11 +447,12 @@ module Backup
           ex = exit_status == 2 ? Error : FatalError
           err = ex.wrap(exception, "Backup for #{label} (#{trigger}) Failed!")
           Logger.error err
-          Logger.error "\nBacktrace:\n\s\s" + err.backtrace.join("\n\s\s") + "\n\n"
+          Logger.error "\nBacktrace:\n\s\s" +
+            err.backtrace.join("\n\s\s") + "\n\n"
 
           Cleaner.warnings(self)
         else
-          msg = "Backup for '#{label} (#{trigger})' "
+          msg = "Backup for '#{label} (#{trigger})' ".dup
           if exit_status == 1
             msg << "Completed Successfully (with Warnings) in #{duration}"
             Logger.warn msg

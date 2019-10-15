@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "a subclass of Syncer::Cloud::Base" do
   let(:syncer_name) { described_class.name.sub("Backup::", "") }
   let(:s) { sequence "" }

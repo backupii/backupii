@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Storage
     module Cycler
@@ -33,11 +35,11 @@ module Backup
         remove!(package) unless package.no_cycle
       rescue => err
         Logger.warn Error.wrap(err, <<-EOS)
-            There was a problem removing the following package:
-            Trigger: #{package.trigger} :: Dated: #{package.time}
-            Package included the following #{package.filenames.count} file(s):
-            #{package.filenames.join("\n")}
-          EOS
+          There was a problem removing the following package:
+          Trigger: #{package.trigger} :: Dated: #{package.time}
+          Package included the following #{package.filenames.count} file(s):
+          #{package.filenames.join("\n")}
+        EOS
       end
 
       # Returns path to the YAML data file.
@@ -49,7 +51,8 @@ module Backup
         end
       end
 
-      # Returns stored Package objects, sorted by #time descending (oldest last).
+      # Returns stored Package objects, sorted by #time descending (oldest
+      # last).
       def yaml_load
         if File.exist?(yaml_file) && !File.zero?(yaml_file)
           YAML.load_file(yaml_file).sort_by!(&:time).reverse!

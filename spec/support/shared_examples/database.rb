@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples "a subclass of Database::Base" do
   describe "#initialize" do
     it "sets a reference to the model" do

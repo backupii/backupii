@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Syncer
     module RSync
@@ -55,12 +57,14 @@ module Backup
         # Used to supply a String or Array of options to be passed to the SSH
         # command in `:ssh` and `:ssh_daemon` modes.
         #
-        # For example, if you need to supply a specific SSH key for the `ssh_user`,
-        # you would set this to: "-i '/path/to/id_rsa'". Which would produce:
+        # For example, if you need to supply a specific SSH key for the
+        # `ssh_user`, you would set this to: "-i '/path/to/id_rsa'". Which would
+        # produce:
         #
         #   rsync -e "ssh -p 22 -i '/path/to/id_rsa'"
         #
-        # Arguments may be single-quoted, but should not contain any double-quotes.
+        # Arguments may be single-quoted, but should not contain any
+        # double-quotes.
         #
         # Used only for `:ssh` and `:ssh_daemon` modes.
         attr_accessor :additional_ssh_options
@@ -78,7 +82,8 @@ module Backup
         # RSync Password
         #
         # If specified, Backup will write the password to a temporary file and
-        # use it with rsync's `--password-file` option for daemon authentication.
+        # use it with rsync's `--password-file` option for daemon
+        # authentication.
         #
         # Note that setting this will override `rsync_password_file`.
         #
@@ -125,14 +130,14 @@ module Backup
         # Remove any preceeding '~/', since this is on the remote,
         # and remove any trailing `/`.
         def dest_path
-          @dest_path ||= path.sub(/^~\//, "").sub(/\/$/, "")
+          @dest_path ||= path.sub(%r{^~/}, "").sub(%r{/$}, "")
         end
 
         ##
-        # Runs a 'mkdir -p' command on the remote to ensure the dest_path exists.
-        # This used because rsync will attempt to create the path, but will only
-        # call 'mkdir' without the '-p' option. This is only applicable in :ssh
-        # mode, and only used if the path would require this.
+        # Runs a 'mkdir -p' command on the remote to ensure the dest_path
+        # exists. This used because rsync will attempt to create the path, but
+        # will only call 'mkdir' without the '-p' option. This is only
+        # applicable in :ssh mode, and only used if the path would require this.
         def create_dest_path!
           return unless mode == :ssh && dest_path.index("/").to_i > 0
 
@@ -178,7 +183,7 @@ module Backup
         end
 
         def ssh_transport_args
-          args = "-p #{port} "
+          args = "-p #{port} ".dup
           args << "-l #{ssh_user} " if ssh_user
           args << Array(additional_ssh_options).join(" ")
           args.rstrip

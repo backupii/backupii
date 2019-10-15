@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "mail"
 
 module Backup
@@ -163,7 +165,8 @@ module Backup
 
         send_log = send_log_on.include?(status)
         template = Backup::Template.new(model: model, send_log: send_log)
-        email.body = template.result(sprintf("notifier/mail/%s.erb", status.to_s))
+        email.body = template.result(sprintf("notifier/mail/%s.erb",
+                                             status.to_s))
 
         if send_log
           email.convert_to_multipart

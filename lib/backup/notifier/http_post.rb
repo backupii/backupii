@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "uri"
 
 module Backup
@@ -8,8 +10,8 @@ module Backup
       #
       # URI scheme may be `http` or `https`.
       #
-      # If Basic Authentication is needed, supply the `user:password` in the URI.
-      # e.g. 'https://user:pass@www.example.com/path'
+      # If Basic Authentication is needed, supply the `user:password` in the
+      # URI. e.g. 'https://user:pass@www.example.com/path'
       #
       # Port may also be supplied.
       # e.g. 'http://www.example.com:8080/path'
@@ -54,8 +56,8 @@ module Backup
       ##
       # Verify the server's certificate when using SSL.
       #
-      # This will default to +true+ for most systems.
-      # It may be forced by setting to +true+, or disabled by setting to +false+.
+      # This will default to +true+ for most systems. It may be forced by
+      # setting to +true+, or disabled by setting to +false+.
       attr_accessor :ssl_verify_peer
 
       ##

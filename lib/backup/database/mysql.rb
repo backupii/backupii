@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class MySQL < Base
@@ -76,7 +78,7 @@ module Backup
         super
 
         pipeline = Pipeline.new
-        dump_ext = sql_backup? ? "sql" : "tar"
+        dump_ext = (sql_backup? ? "sql" : "tar").dup
 
         pipeline << sudo_option(sql_backup? ? mysqldump : innobackupex)
 
@@ -166,6 +168,7 @@ module Backup
 
       def innobackupex_prepare
         return "" unless @prepare_backup
+
         # Log applying phase (prepare for restore)
         "#{utility(:innobackupex)} --apply-log #{temp_dir} " \
           "#{user_prepare_options}  #{quiet_option} && "

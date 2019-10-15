@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class PostgreSQL < Base
@@ -51,7 +53,7 @@ module Backup
         super
 
         pipeline = Pipeline.new
-        dump_ext = "sql"
+        dump_ext = "sql".dup
 
         pipeline << (dump_all? ? pgdumpall : pgdump)
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Load Ruby Core Libraries
 require "time"
 require "fileutils"
@@ -6,7 +8,6 @@ require "syslog"
 require "yaml"
 require "etc"
 require "forwardable"
-require "thread"
 
 require "open4"
 require "thor"
@@ -30,7 +31,7 @@ module Backup
   COMPRESSOR_PATH    = File.join(LIBRARY_PATH, "compressor")
   ENCRYPTOR_PATH     = File.join(LIBRARY_PATH, "encryptor")
   NOTIFIER_PATH      = File.join(LIBRARY_PATH, "notifier")
-  TEMPLATE_PATH      = File.expand_path("../../templates", __FILE__)
+  TEMPLATE_PATH      = File.expand_path("../templates", __dir__)
 
   ##
   # Autoload Backup storage files

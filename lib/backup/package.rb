@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   class Package
     ##
@@ -25,8 +27,8 @@ module Backup
     attr_reader :version
 
     def initialize(model)
-      @trigger = model.trigger
-      @extension = "tar"
+      @trigger = model.trigger.dup
+      @extension = "tar".dup
       @chunk_suffixes = []
       @no_cycle = false
       @version = VERSION

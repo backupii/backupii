@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Compressor
     class Gzip < Base
@@ -23,9 +25,9 @@ module Backup
       # when used to compress `Archive` or `Database` backups that will be
       # stored using Backup's `RSync` Storage option.
       #
-      # The `--rsyncable` option is only available on patched versions of `gzip`.
-      # While most distributions apply this patch, this option may not be
-      # available on your system. If it's not available, Backup will log a
+      # The `--rsyncable` option is only available on patched versions of
+      # `gzip`. While most distributions apply this patch, this option may not
+      # be available on your system. If it's not available, Backup will log a
       # warning and continue to use the compressor without this option.
       attr_accessor :rsyncable
 
@@ -33,6 +35,7 @@ module Backup
       # Determine if +--rsyncable+ is supported and cache the result.
       def self.has_rsyncable?
         return @has_rsyncable unless @has_rsyncable.nil?
+
         cmd = "#{utility(:gzip)} --rsyncable --version >/dev/null 2>&1; echo $?"
         @has_rsyncable = `#{cmd}`.chomp == "0"
       end
@@ -54,7 +57,7 @@ module Backup
       private
 
       def options
-        opts = ""
+        opts = String.new
         opts << " -#{@level}" if @level
         if @rsyncable
           if self.class.has_rsyncable?

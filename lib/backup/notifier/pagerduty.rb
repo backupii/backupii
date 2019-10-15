@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pagerduty"
 
 module Backup
@@ -34,7 +36,8 @@ module Backup
       #
       # `:warning`
       # : The backup completed successfully, but warnings were logged.
-      # : An incident will be triggered if `on_warning` or `on_success` is `true`.
+      # : An incident will be triggered if `on_warning` or `on_success`
+      #   is `true`.
       #
       # `:failure`
       # : The backup operation failed.

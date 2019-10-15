@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class OpenLDAP < Base
@@ -8,8 +10,9 @@ module Backup
       attr_accessor :name
 
       ##
-      # run slapcat under sudo if needed
-      # make sure to set SUID on a file, to let you run the file with permissions of file owner
+      # run slapcat under sudo if needed make sure to set SUID on a file, to let
+      # you run the file with permissions of file owner
+      #
       # eg. sudo chmod u+s /usr/sbin/slapcat
       attr_accessor :use_sudo
 
@@ -45,7 +48,7 @@ module Backup
         super
 
         pipeline = Pipeline.new
-        dump_ext = "ldif"
+        dump_ext = "ldif".dup
 
         pipeline << slapcat
         if @model.compressor
@@ -71,7 +74,8 @@ module Backup
       ##
       # Builds the full slapcat string based on all attributes
       def slapcat
-        command = "#{slapcat_utility} #{slapcat_conf_option} #{slapcat_conf} #{user_options}"
+        command = "#{slapcat_utility} #{slapcat_conf_option} " \
+                  "#{slapcat_conf} #{user_options}".dup
         command.prepend("sudo ") if use_sudo
         command
       end

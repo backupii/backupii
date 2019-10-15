@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   class Logger
     class Syslog
@@ -24,8 +26,8 @@ module Backup
         ##
         # Specify the options to be used with Syslog.
         #
-        # See the Ruby Standard Library documentation for +Syslog+ for more info.
-        # http://rdoc.info/stdlib/syslog/Syslog.open
+        # See the Ruby Standard Library documentation for +Syslog+ for more
+        # info. http://rdoc.info/stdlib/syslog/Syslog.open
         #
         # Note that setting this to +nil+ will cause this to default
         # to a setting of +Syslog::LOG_PID | Syslog::LOG_CONS+
@@ -37,8 +39,8 @@ module Backup
         ##
         # Specify the facility to be used with Syslog.
         #
-        # See the Ruby Standard Library documentation for +Syslog+ for more info.
-        # http://rdoc.info/stdlib/syslog/Syslog.open
+        # See the Ruby Standard Library documentation for +Syslog+ for more
+        # info. http://rdoc.info/stdlib/syslog/Syslog.open
         #
         # Note that setting this to +nil+ will cause this to default
         # to a setting of +Syslog::LOG_USER+
@@ -50,8 +52,8 @@ module Backup
         ##
         # Specify the priority level to be used for +:info+ messages.
         #
-        # See the Ruby Standard Library documentation for +Syslog+ for more info.
-        # http://rdoc.info/stdlib/syslog/Syslog.log
+        # See the Ruby Standard Library documentation for +Syslog+ for more
+        # info. http://rdoc.info/stdlib/syslog/Syslog.log
         #
         # @param [Integer]
         # @return [Integer] Default: +Syslog::LOG_INFO+
@@ -60,8 +62,8 @@ module Backup
         ##
         # Specify the priority level to be used for +:warn+ messages.
         #
-        # See the Ruby Standard Library documentation for +Syslog+ for more info.
-        # http://rdoc.info/stdlib/syslog/Syslog.log
+        # See the Ruby Standard Library documentation for +Syslog+ for more
+        # info. http://rdoc.info/stdlib/syslog/Syslog.log
         #
         # @param [Integer]
         # @return [Integer] Default: +Syslog::LOG_WARNING+
@@ -70,8 +72,8 @@ module Backup
         ##
         # Specify the priority level to be used for +:error+ messages.
         #
-        # See the Ruby Standard Library documentation for +Syslog+ for more info.
-        # http://rdoc.info/stdlib/syslog/Syslog.log
+        # See the Ruby Standard Library documentation for +Syslog+ for more
+        # info. http://rdoc.info/stdlib/syslog/Syslog.log
         #
         # @param [Integer]
         # @return [Integer] Default: +Syslog::LOG_ERR+

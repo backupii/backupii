@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/cloud_io/s3"
 
 module Backup
@@ -77,7 +79,7 @@ module Backup
         @path           ||= "backups"
         @storage_class  ||= :standard
 
-        @path = @path.sub(/^\//, "")
+        @path = @path.sub(%r{^/}, "")
 
         check_configuration
       end
@@ -144,7 +146,7 @@ module Backup
           #encryption must be :aes256 or nil
         EOS
 
-        classes = ["STANDARD", "STANDARD_IA", "REDUCED_REDUNDANCY"]
+        classes = %w[STANDARD STANDARD_IA REDUCED_REDUNDANCY]
         raise Error, <<-EOS unless classes.include?(storage_class.to_s.upcase)
           Configuration Error
           #storage_class must be :standard or :standard_ia or :reduced_redundancy

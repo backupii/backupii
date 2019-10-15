@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubygems" if RUBY_VERSION < "1.9"
 require "bundler/setup"
 require "backup"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Storage
     class Local < Base
@@ -37,7 +39,7 @@ module Backup
       def remote_path(pkg = package)
         File.expand_path(super)
       end
-      alias :remote_path_for :remote_path
+      alias remote_path_for remote_path
 
       ##
       # If this Local Storage is not the last Storage for the Model,

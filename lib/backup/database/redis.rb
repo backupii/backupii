@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class Redis < Base
       class Error < Backup::Error; end
 
-      MODES = [:copy, :sync]
+      MODES = %i[copy sync].freeze
 
       ##
       # Mode of operation.
@@ -76,8 +78,8 @@ module Backup
         when :sync
           # messages output by `redis-cli --rdb` on $stderr
           Logger.configure do
-            ignore_warning(/Transfer finished with success/)
-            ignore_warning(/SYNC sent to master/)
+            ignore_warning(%r{Transfer finished with success})
+            ignore_warning(%r{SYNC sent to master})
           end
           sync!
         when :copy
@@ -92,7 +94,7 @@ module Backup
 
       def sync!
         pipeline = Pipeline.new
-        dump_ext = "rdb"
+        dump_ext = "rdb".dup
 
         pipeline << "#{redis_cli_cmd} --rdb -"
 
@@ -115,15 +117,15 @@ module Backup
 
       def save!
         resp = run("#{redis_cli_cmd} SAVE")
-        unless resp =~ /OK$/
+        unless resp =~ %r{OK$}
           raise Error, <<-EOS
             Failed to invoke the `SAVE` command
             Response was: #{resp}
           EOS
         end
       rescue Error
-        if resp =~ /save already in progress/
-          unless (attempts ||= "0").next! == "5"
+        if resp =~ %r{save already in progress}
+          unless (attempts ||= "0".dup).next! == "5"
             sleep 5
             retry
           end
@@ -156,6 +158,7 @@ module Backup
 
       def password_option
         return unless password
+
         "-a '#{password}'"
       end
 

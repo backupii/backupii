@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "net/ftp"
 
 module Backup
@@ -30,10 +32,10 @@ module Backup
         super
 
         @port         ||= 21
-        @path         ||= "backups"
+        @path         ||= "backups".dup
         @passive_mode ||= false
         @timeout      ||= nil
-        path.sub!(/^~\//, "")
+        path.sub!(%r{^~/}, "")
       end
 
       private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/cloud_io/s3"
 
 module Backup
@@ -87,21 +89,28 @@ module Backup
             else
               %w[access_key_id secret_access_key bucket]
             end
-          raise Error, <<-EOS if required.map { |name| send(name) }.any?(&:nil?)
-            Configuration Error
-            #{required.map { |name| "##{name}" }.join(", ")} are all required
-          EOS
 
-          raise Error, <<-EOS if encryption && encryption.to_s.upcase != "AES256"
-            Configuration Error
-            #encryption must be :aes256 or nil
-          EOS
+          if required.map { |name| send(name) }.any?(&:nil?)
+            raise Error, <<-EOS
+              Configuration Error
+              #{required.map { |name| "##{name}" }.join(", ")} are all required
+            EOS
+          end
 
-          classes = ["STANDARD", "REDUCED_REDUNDANCY"]
-          raise Error, <<-EOS unless classes.include?(storage_class.to_s.upcase)
-            Configuration Error
-            #storage_class must be :standard or :reduced_redundancy
-          EOS
+          if encryption && encryption.to_s.upcase != "AES256"
+            raise Error, <<-EOS
+              Configuration Error
+              #encryption must be :aes256 or nil
+            EOS
+          end
+          classes = %w[STANDARD REDUCED_REDUNDANCY]
+
+          unless classes.include?(storage_class.to_s.upcase)
+            raise Error, <<-EOS
+              Configuration Error
+              #storage_class must be :standard or :reduced_redundancy
+            EOS
+          end
         end
       end # Class S3 < Base
     end # module Cloud

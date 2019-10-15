@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dropbox_sdk"
 
 module Backup
@@ -49,13 +51,13 @@ module Backup
       def initialize(model, storage_id = nil)
         super
 
-        @path           ||= "backups"
+        @path           ||= "backups".dup
         @cache_path     ||= ".cache"
         @access_type    ||= :app_folder
         @chunk_size     ||= 4 # MiB
         @max_retries    ||= 10
         @retry_waitsec  ||= 30
-        path.sub!(/^\//, "")
+        path.sub!(%r{^/}, "")
       end
 
       private
@@ -73,7 +75,7 @@ module Backup
       def connection
         return @connection if @connection
 
-        unless session = cached_session
+        unless (session = cached_session)
           Logger.info "Creating a new session!"
           session = create_write_and_return_new_session!
         end
@@ -104,8 +106,8 @@ module Backup
 
       ##
       # Transfer each of the package files to Dropbox in chunks of +chunk_size+.
-      # Each chunk will be retried +chunk_retries+ times, pausing +retry_waitsec+
-      # between retries, if errors occur.
+      # Each chunk will be retried +chunk_retries+ times, pausing
+      # +retry_waitsec+ between retries, if errors occur.
       def transfer!
         package.filenames.each do |filename|
           src = File.join(Config.tmp_path, filename)

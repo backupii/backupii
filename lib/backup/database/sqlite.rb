@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class SQLite < Base
@@ -29,7 +31,7 @@ module Backup
         dump = "echo '.dump' | #{sqlitedump_utility} #{path}"
 
         pipeline = Pipeline.new
-        dump_ext = "sql"
+        dump_ext = "sql".dup
 
         pipeline << dump
         if model.compressor

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Encryptor
     ##
@@ -30,7 +32,8 @@ module Backup
     #
     # === my_backup_01
     #
-    # This archive can only be decrypted using the private key for joe@example.com
+    # This archive can only be decrypted using the private key for
+    # joe@example.com
     #
     #   Model.new(:my_backup_01, 'Backup Job #1') do
     #     # ... archives, databases, compressor and storage options, etc...
@@ -54,8 +57,9 @@ module Backup
     #
     # === my_backup_03
     #
-    # This archive may be decrypted using either the private key for joe@example.com
-    # *or* mary@example.com, *and* may also be decrypted using the passphrase.
+    # This archive may be decrypted using either the private key for
+    # joe@example.com *or* mary@example.com, *and* may also be decrypted using
+    # the passphrase.
     #
     #   Model.new(:my_backup_03, 'Backup Job #3') do
     #     # ... archives, databases, compressor and storage options, etc...
@@ -69,7 +73,7 @@ module Backup
     class GPG < Base
       class Error < Backup::Error; end
 
-      MODES = [:asymmetric, :symmetric, :both]
+      MODES = %i[asymmetric symmetric both].freeze
 
       ##
       # Sets the mode of operation.
@@ -102,7 +106,9 @@ module Backup
       attr_reader :mode
       def mode=(mode)
         @mode = mode.to_sym
-        raise Error, "'#{@mode}' is not a valid mode." unless MODES.include?(@mode)
+        unless MODES.include?(@mode)
+          raise Error, "'#{@mode}' is not a valid mode."
+        end
       end
 
       ##
@@ -166,8 +172,8 @@ module Backup
       # Specifies a Hash of public key identifiers and their public keys.
       #
       # While not _required_, it is recommended that all public keys you intend
-      # to use be setup in {#keys}. The best place to do this is in your defaults
-      # in +config.rb+.
+      # to use be setup in {#keys}. The best place to do this is in your
+      # defaults in +config.rb+.
       #
       #   Backup::Encryptor::GPG.defaults do |enc|
       #     enc.keys = {}
@@ -203,8 +209,9 @@ module Backup
       #
       # When a public key can not be found for an identifier specified in
       # {#recipients}, the corresponding public key from this Hash will be
-      # imported into +pubring.gpg+ in the GnuPG home directory ({#gpg_homedir}).
-      # Therefore, each key *must* be the same identifier used in {#recipients}.
+      # imported into +pubring.gpg+ in the GnuPG home directory
+      # ({#gpg_homedir}). Therefore, each key *must* be the same identifier used
+      # in {#recipients}.
       #
       # To obtain the public key in ASCII format, use:
       #
@@ -267,8 +274,8 @@ module Backup
       #   associated with the recipient's public key.
       #
       # Recipient identifier forms may be mixed, as long as the identifier used
-      # here is the same as that used in {#keys}. Also, all spaces will be stripped
-      # from the identifier when used, so the following would be valid.
+      # here is the same as that used in {#keys}. Also, all spaces will be
+      # stripped from the identifier when used, so the following would be valid.
       #
       #   Backup::Model.new(:my_backup, 'My Backup') do
       #     encrypt_with GPG do |enc|
@@ -431,7 +438,7 @@ module Backup
         @user_keys = nil
         @system_identifiers = nil
       end
-      alias :cleanup :prepare
+      alias cleanup prepare
 
       ##
       # Returns the options needed for the gpg command line which are
@@ -500,7 +507,7 @@ module Backup
         dir = Dir.mktmpdir("backup-gpg_config", Config.tmp_path)
         @tempdirs << dir
         file = Tempfile.open("backup-gpg_config", dir)
-        file.write gpg_config.gsub(/^[[:blank:]]+/, "")
+        file.write gpg_config.gsub(%r{^[[:blank:]]+}, "")
         file.close
 
         check_gpg_config(file.path)
@@ -648,8 +655,8 @@ module Backup
       # and wrap email addresses in <> to perform exact matching.
       #
       def clean_identifier(str)
-        str = str.to_s.gsub(/[[:blank:]]+/, "")
-        str =~ /@/ ? "<#{str.gsub(/(<|>)/, "")}>" : str.upcase
+        str = str.to_s.gsub(%r{[[:blank:]]+}, "")
+        str =~ %r{@} ? "<#{str.gsub(%r{(<|>)}, "")}>" : str.upcase
       end
 
       ##
@@ -659,14 +666,15 @@ module Backup
       #
       def import_key(identifier, key)
         file = Tempfile.open("backup-gpg_import", Config.tmp_path)
-        file.write(key.gsub(/^[[:blank:]]+/, ""))
+        file.write(key.gsub(%r{^[[:blank:]]+}, ""))
         file.close
         ret = run "#{utility(:gpg)} #{base_options} " \
           "--keyid-format 0xlong --import '#{file.path}' 2>&1"
         file.delete
 
-        keyid = ret.match(/ 0x(\w{16})/).to_a[1]
-        raise "GPG Returned:\n#{ret.gsub(/^\s*/, "  ")}" unless keyid
+        keyid = ret.match(%r{ 0x(\w{16})}).to_a[1]
+        raise "GPG Returned:\n#{ret.gsub(%r{^\s*}, "  ")}" unless keyid
+
         keyid
       rescue => err
         Logger.warn Error.wrap(
@@ -689,11 +697,11 @@ module Backup
             line.strip!
 
             # process public key record
-            if line =~ /^pub:/
+            if line =~ %r{^pub:}
               validity, keyid, capabilities = line.split(":").values_at(1, 4, 11)
               # skip keys marked as revoked ('r'), expired ('e'),
               # invalid ('i') or disabled ('D')
-              if validity[0, 1] =~ /(r|e|i)/ || capabilities =~ /D/
+              if validity[0, 1] =~ %r{(r|e|i)} || capabilities =~ %r{D}
                 skip_key = true
                 next nil
               else
@@ -706,24 +714,24 @@ module Backup
               next if skip_key
 
               # process UID records for the current public key
-              if line =~ /^uid:/
+              if line =~ %r{^uid:}
                 validity, userid = line.split(":").values_at(1, 9)
                 # skip records marked as revoked ('r'), expired ('e')
                 # or invalid ('i')
-                if validity !~ /(r|e|i)/
+                if validity !~ %r{(r|e|i)}
                   # return the last email found in user id string,
                   # since this includes user supplied comments.
                   # return nil if no email found.
                   email = nil
                   str = userid
-                  while match = str.match(/<.+?@.+?>/)
+                  while (match = str.match(%r{<.+?@.+?>}))
                     email = match[0]
                     str = match.post_match
                   end
                   next email
                 end
               # return public key's fingerprint
-              elsif line =~ /^fpr:/
+              elsif line =~ %r{^fpr:}
                 next line.split(":")[9]
               end
 

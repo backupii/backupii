@@ -46,7 +46,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "qiniu", "~> 6.5"
   gem.add_dependency "nokogiri", "~> 1.8", ">= 1.8.1"
 
-  gem.add_development_dependency "rubocop", "0.48.1"
+  gem.add_development_dependency "rubocop", "0.75.1"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec", "3.8.0"
   gem.add_development_dependency "timecop", "0.9.1"

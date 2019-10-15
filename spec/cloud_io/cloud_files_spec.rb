@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "backup/cloud_io/cloud_files"
 

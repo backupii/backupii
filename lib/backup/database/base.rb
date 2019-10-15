@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Database
     class Error < Backup::Error; end
@@ -14,7 +16,7 @@ module Backup
       # the model.
       def initialize(model, database_id = nil)
         @model = model
-        @database_id = database_id.to_s.gsub(/\W/, "_") if database_id
+        @database_id = database_id.to_s.gsub(%r{\W}, "_") if database_id
         @dump_path = File.join(Config.tmp_path, model.trigger, "databases")
         load_defaults!
       end
@@ -31,8 +33,8 @@ module Backup
       end
 
       ##
-      # Sets the base filename for the final dump file to be saved in +dump_path+,
-      # based on the class name. e.g. databases/MySQL.sql
+      # Sets the base filename for the final dump file to be saved in
+      # +dump_path+, based on the class name. e.g. databases/MySQL.sql
       #
       # +database_id+ will be appended if it is defined.
       # e.g. databases/MySQL-database_id.sql
@@ -64,7 +66,8 @@ module Backup
               end
             end
 
-            self.class.name.split("::").last + (database_id ? "-#{database_id}" : "")
+            self.class.name.split("::").last +
+              (database_id ? "-#{database_id}" : "")
           end
       end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   module Syncer
     module RSync
@@ -29,8 +31,8 @@ module Backup
         def paths_to_pull
           sep = mode == :ssh ? ":" : "::"
           directories.map do |dir|
-            "#{sep}'#{dir.sub(/^~\//, "").sub(/\/$/, "")}'"
-          end.join(" ").sub(/^#{ sep }/, "")
+            "#{sep}'#{dir.sub(%r{^~/}, "").sub(%r{/$}, "")}'"
+          end.join(" ").sub(%r{^#{sep}}, "")
         end
 
         # Expand path, since this is local and shell-quoted.

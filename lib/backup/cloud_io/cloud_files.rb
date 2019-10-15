@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/cloud_io/base"
 require "fog"
 require "digest/md5"
@@ -152,6 +154,7 @@ module Backup
 
       def create_containers
         return if @containers_created
+
         @containers_created = true
 
         with_retries("Create Containers") do
@@ -208,7 +211,7 @@ module Backup
               size_bytes: file.pos - pos
             }
 
-            if i = progress.rindex(segment_number)
+            if (i = progress.rindex(segment_number))
               Logger.info "\s\s...#{i + 1}0% Complete..."
             end
           end
@@ -222,6 +225,7 @@ module Backup
         while offset <= segment_bytes - SEGMENT_BUFFER
           data = file.read(SEGMENT_BUFFER)
           break unless data
+
           offset += data.size
           md5 << data
         end
@@ -250,6 +254,7 @@ module Backup
 
       def delete_at
         return unless days_to_keep
+
         @delete_at ||= (Time.now.utc + days_to_keep * 60**2 * 24).to_i
       end
 

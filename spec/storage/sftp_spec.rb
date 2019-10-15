@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 module Backup
@@ -52,7 +54,7 @@ module Backup
 
       it "does not alter an absolute path" do
         storage = Storage::SFTP.new(model) do |sftp|
-          sftp.path = "/my/path"
+          sftp.path = "/my/path".dup
         end
         expect(storage.path).to eq "/my/path"
       end

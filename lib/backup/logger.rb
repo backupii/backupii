@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "backup/logger/console"
 require "backup/logger/logfile"
 require "backup/logger/syslog"
@@ -6,13 +8,13 @@ require "backup/logger/fog_adapter"
 module Backup
   class Logger
     class Config
-      class Logger < Struct.new(:class, :options)
+      Logger = Struct.new(:class, :options) do
         def enabled?
           options.enabled?
         end
       end
 
-      class DSL < Struct.new(:ignores, :console, :logfile, :syslog)
+      DSL = Struct.new(:ignores, :console, :logfile, :syslog) do
         def ignore_warning(str_or_regexp)
           ignores << str_or_regexp
         end
@@ -34,7 +36,7 @@ module Backup
     ##
     # All messages sent to the Logger are stored in Logger.messages
     # and sent to all enabled logger's #log method as Message objects.
-    class Message < Struct.new(:time, :level, :lines)
+    Message = Struct.new(:time, :level, :lines) do
       ##
       # Returns an Array of the message lines in the following format:
       #

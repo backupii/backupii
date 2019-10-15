@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Backup
   class Archive
     class Error < Backup::Error; end
@@ -76,7 +78,7 @@ module Backup
           tar_success_codes
         )
 
-        extension = "tar"
+        extension = "tar".dup
         if @model.compressor
           @model.compressor.compress_with do |command, ext|
             pipeline << command
