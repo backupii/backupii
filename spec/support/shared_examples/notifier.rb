@@ -164,8 +164,8 @@ shared_examples "a subclass of Notifier::Base" do
 
       expect(Backup::Logger).to receive(:error) do |err|
         expect(err).to be_an_instance_of Backup::Notifier::Error
-        expect(err.message).to match(/#{ notifier_name } Failed!/)
-        expect(err.message).to match(/error message/)
+        expect(err.message).to match(%r{#{notifier_name} Failed!})
+        expect(err.message).to match(%r{error message})
       end
 
       notifier.perform!
@@ -200,8 +200,8 @@ shared_examples "a subclass of Notifier::Base" do
 
       expect(Backup::Logger).to receive(:error).ordered do |err|
         expect(err).to be_an_instance_of Backup::Notifier::Error
-        expect(err.message).to match(/#{ notifier_name } Failed!/)
-        expect(err.message).to match(/final error/)
+        expect(err.message).to match(%r{#{notifier_name} Failed!})
+        expect(err.message).to match(%r{final error})
       end
 
       notifier.perform!

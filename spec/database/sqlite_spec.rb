@@ -79,9 +79,11 @@ module Backup
       context "when no compressor is configured" do
         it "should run sqlitedump without compression" do
           expect(Pipeline).to receive(:new).and_return(pipeline)
-          expect(pipeline).to receive(:<<).ordered.with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
+          expect(pipeline).to receive(:<<).ordered
+            .with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
           expect(model).to receive(:compressor).and_return(nil)
-          expect(pipeline).to receive(:<<).ordered.with("cat > '/dump/path/dump_filename.sql'")
+          expect(pipeline).to receive(:<<).ordered
+            .with("cat > '/dump/path/dump_filename.sql'")
 
           expect(pipeline).to receive(:run).ordered
           expect(pipeline).to receive(:success?).ordered.and_return(true)
@@ -95,11 +97,13 @@ module Backup
       context "when a compressor is configured" do
         it "should run sqlitedump with compression" do
           expect(Pipeline).to receive(:new).and_return(pipeline)
-          expect(pipeline).to receive(:<<).ordered.with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
+          expect(pipeline).to receive(:<<).ordered
+            .with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
           expect(model).to receive(:compressor).twice.and_return(compressor)
           expect(compressor).to receive(:compress_with).and_yield("gzip", ".gz")
           expect(pipeline).to receive(:<<).ordered.with("gzip")
-          expect(pipeline).to receive(:<<).ordered.with("cat > '/dump/path/dump_filename.sql.gz'")
+          expect(pipeline).to receive(:<<).ordered
+            .with("cat > '/dump/path/dump_filename.sql.gz'")
 
           expect(pipeline).to receive(:run).ordered
           expect(pipeline).to receive(:success?).ordered.and_return(true)
@@ -113,12 +117,15 @@ module Backup
       context "when pipeline command fails" do
         before do
           expect(Pipeline).to receive(:new).and_return(pipeline)
-          expect(pipeline).to receive(:<<).ordered.with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
+          expect(pipeline).to receive(:<<).ordered
+            .with("echo '.dump' | /path/to/sqlitedump /tmp/db1.sqlite3")
           expect(model).to receive(:compressor).and_return(nil)
-          expect(pipeline).to receive(:<<).ordered.with("cat > '/dump/path/dump_filename.sql'")
+          expect(pipeline).to receive(:<<).ordered
+            .with("cat > '/dump/path/dump_filename.sql'")
           expect(pipeline).to receive(:run).ordered
           expect(pipeline).to receive(:success?).ordered.and_return(false)
-          expect(pipeline).to receive(:error_messages).and_return("pipeline_errors")
+          expect(pipeline).to receive(:error_messages)
+            .and_return("pipeline_errors")
         end
 
         it "should raise an error" do

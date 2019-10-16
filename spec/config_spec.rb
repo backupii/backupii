@@ -12,9 +12,11 @@ module Backup
     describe "#load" do
       it "loads config.rb and models" do
         allow(File).to receive(:exist?).and_return(true)
-        allow(File).to receive(:read).and_return("# Backup v#{major_gem_version}.x Configuration\n@loaded << :config")
+        allow(File).to receive(:read)
+          .and_return("# Backup v#{major_gem_version}.x Configuration\n"\
+                      "@loaded << :config")
         allow(File).to receive(:directory?).and_return(true)
-        allow(Dir).to receive(:[]).and_return(["model_a", "model_b"])
+        allow(Dir).to receive(:[]).and_return(%w[model_a model_b])
         expect(File).to receive(:read).with("model_a").and_return("@loaded << :model_a")
         expect(File).to receive(:read).with("model_b").and_return("@loaded << :model_b")
 
@@ -33,7 +35,7 @@ module Backup
         config_file = File.expand_path("foo")
         expect do
           config.load(config_file: config_file)
-        end.to raise_error config::Error, /Could not find configuration file: '#{ config_file }'/
+        end.to raise_error config::Error, %r{Could not find configuration file: '#{config_file}'}
       end
 
       it "raises an error if config file version is invalid" do
@@ -44,7 +46,7 @@ module Backup
 
         expect do
           config.load(config_file: "/foo")
-        end.to raise_error config::Error, /Invalid Configuration File/
+        end.to raise_error config::Error, %r{Invalid Configuration File}
       end
 
       describe "setting config paths from command line options" do
@@ -193,8 +195,8 @@ module Backup
             config.send(:set_root_path, "foo")
           end.to raise_error(proc do |err|
             expect(err).to be_an_instance_of config::Error
-            expect(err.message).to match(/Root Path Not Found/)
-            expect(err.message).to match(/Path was: #{ path }/)
+            expect(err.message).to match(%r{Root Path Not Found})
+            expect(err.message).to match(%r{Path was: #{path}})
           end)
         end
       end
@@ -202,9 +204,7 @@ module Backup
 
     describe "#set_path_variable" do
       after do
-        if config.instance_variable_defined?(:@var)
-          config.send(:remove_instance_variable, :@var)
-        end
+        config.send(:remove_instance_variable, :@var) if config.instance_variable_defined?(:@var)
       end
 
       context "when a path is given" do
@@ -275,7 +275,7 @@ module Backup
         end
         expect(config.instance_variables).to be_empty
 
-        load File.expand_path("../../lib/backup/config.rb", __FILE__)
+        load File.expand_path("../lib/backup/config.rb", __dir__)
         expect(config.instance_variables.sort.map(&:to_sym)).to eq(expected)
       end
 

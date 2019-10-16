@@ -23,8 +23,11 @@ shared_examples "a class that includes Config::Helpers" do
 
     it "allows accessors to be configured with default values" do
       overrides = respond_to?(:default_overrides) ? default_overrides : {}
-      klass = respond_to?(:model) ?
-          described_class.new(model) : described_class.new
+      klass = if respond_to?(:model)
+                described_class.new(model)
+              else
+                described_class.new
+              end
       accessor_names.each do |name|
         expected = overrides[name] || "default_#{name}"
         expect(klass.send(name)).to eq expected
@@ -40,8 +43,11 @@ shared_examples "a class that includes Config::Helpers" do
           klass.send("#{name}=", val)
         end
       end
-      klass = respond_to?(:model) ?
-          described_class.new(model, &block) : described_class.new(&block)
+      klass = if respond_to?(:model)
+                described_class.new(model, &block)
+              else
+                described_class.new(&block)
+              end
       names.each do |name|
         expected = overrides[name] || "new_#{name}"
         expect(klass.send(name)).to eq expected

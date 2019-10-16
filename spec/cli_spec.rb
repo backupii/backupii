@@ -184,7 +184,7 @@ describe "Backup::CLI" do
           expectations = [
             proc do |err|
               expect(err).to be_a(Backup::CLI::Error)
-              expect(err.message).to match(/config load error/)
+              expect(err.message).to match(%r{config load error})
             end,
             proc { |err| expect(err).to be_a(String) }
           ]
@@ -213,7 +213,7 @@ describe "Backup::CLI" do
           expect(Backup::Logger).to receive(:error).ordered do |err|
             expect(err).to be_a(Backup::CLI::Error)
             expect(err.message).to match(
-              /No Models found for trigger\(s\) 'test_trigger_foo'/
+              %r{No Models found for trigger\(s\) 'test_trigger_foo'}
             )
           end
 
@@ -377,8 +377,8 @@ describe "Backup::CLI" do
         end.to raise_error(SystemExit) { |exit| expect(exit.status).to be(1) }
       end
 
-      expect(err).to match(/RuntimeError: an error/)
-      expect(err).to match(/\[error\] Configuration Check Failed/)
+      expect(err).to match(%r{RuntimeError: an error})
+      expect(err).to match(%r{\[error\] Configuration Check Failed})
       expect(out).to be_empty
     end
 
@@ -394,8 +394,8 @@ describe "Backup::CLI" do
         end.to raise_error(SystemExit) { |exit| expect(exit.status).to be(1) }
       end
 
-      expect(err).to match(/\[warn\] warning message/)
-      expect(err).to match(/\[error\] Configuration Check Failed/)
+      expect(err).to match(%r{\[warn\] warning message})
+      expect(err).to match(%r{\[error\] Configuration Check Failed})
       expect(out).to be_empty
     end
 
@@ -410,7 +410,7 @@ describe "Backup::CLI" do
       end
 
       expect(err).to be_empty
-      expect(out).to match(/\[info\] Configuration Check Succeeded/)
+      expect(out).to match(%r{\[info\] Configuration Check Succeeded})
     end
 
     it "uses --config-file if given" do
@@ -557,7 +557,7 @@ describe "Backup::CLI" do
 
       expect(err).to be_empty
       options.each do |option|
-        expect(out).to match(/#{ option[0] }.*#{ option[2] }/)
+        expect(out).to match(%r{#{option[0]}.*#{option[2]}})
       end
     end
   end # describe '#generate:model'

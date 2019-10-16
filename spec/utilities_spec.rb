@@ -180,7 +180,7 @@ describe Backup::Utilities::Helpers do
 
       expect do
         helpers.send(:utility, :unknown)
-      end.to raise_error(Backup::Utilities::Error, /Could not locate 'unknown'/)
+      end.to raise_error(Backup::Utilities::Error, %r{Could not locate 'unknown'})
     end
 
     it "should raise an error if name is nil" do

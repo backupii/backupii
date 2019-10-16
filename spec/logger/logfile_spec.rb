@@ -138,15 +138,13 @@ module Backup
             lineno = 0
             File.open(@logfile_default, "w") do |file|
               bytes = 0
-              until bytes > 1200
-                bytes += file.write((lineno += 1).to_s.ljust(120, "x") + "\n")
-              end
+              bytes += file.write((lineno += 1).to_s.ljust(120, "x") + "\n") until bytes > 1200
             end
             expect(File.stat(@logfile_default).size).to be >= 1200
 
             Logger.start!
             expect(File.stat(@logfile_default).size).to be <= 1000
-            expect(File.readlines(@logfile_default).last).to match(/#{ lineno }x/)
+            expect(File.readlines(@logfile_default).last).to match(%r{#{lineno}x})
             expect(File.exist?(@logfile_default + "~")).to eq(false)
           end
         end

@@ -31,11 +31,13 @@ module Backup
       it "requires access_key secret_key and bucket" do
         expect do
           Storage::Qiniu.new(model)
-        end.to raise_error StandardError, /#access_key, #secret_key, #bucket are all required/
+        end.to raise_error StandardError,
+          %r{#access_key, #secret_key, #bucket are all required}
       end
 
       it "establishes connection" do
-        expect(::Qiniu).to receive(:establish_connection!).with(access_key: "my_access_key", secret_key: "my_secret_key")
+        expect(::Qiniu).to receive(:establish_connection!)
+          .with(access_key: "my_access_key", secret_key: "my_secret_key")
 
         pre_config = required_config
         Storage::Qiniu.new(model) do |qiniu|
@@ -106,7 +108,8 @@ module Backup
       after { Timecop.return }
 
       it "removes the given package from the remote" do
-        expect(Logger).to receive(:info).ordered.with("Removing backup package dated #{timestamp}...")
+        expect(Logger).to receive(:info).ordered
+          .with("Removing backup package dated #{timestamp}...")
 
         dest = File.join(remote_path, "test_trigger.tar-aa")
         expect(::Qiniu).to receive(:delete).ordered.with("my_bucket", dest)

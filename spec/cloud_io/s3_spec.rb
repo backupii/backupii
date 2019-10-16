@@ -302,7 +302,7 @@ module Backup
         object_b = described_class::Object.new(:foo, "Key" => "obj_key_b")
         expect(cloud_io).to receive(:with_retries).with("DELETE Multiple Objects").and_yield
         expect(connection).to receive(:delete_multiple_objects).with(
-          "my_bucket", ["obj_key_a", "obj_key_b"], quiet: true
+          "my_bucket", %w[obj_key_a obj_key_b], quiet: true
         ).and_return(resp_ok)
 
         objects = [object_a, object_b]
@@ -320,10 +320,10 @@ module Backup
       it "accepts multiple keys" do
         expect(cloud_io).to receive(:with_retries).with("DELETE Multiple Objects").and_yield
         expect(connection).to receive(:delete_multiple_objects).with(
-          "my_bucket", ["obj_key_a", "obj_key_b"], quiet: true
+          "my_bucket", %w[obj_key_a obj_key_b], quiet: true
         ).and_return(resp_ok)
 
-        objects = ["obj_key_a", "obj_key_b"]
+        objects = %w[obj_key_a obj_key_b]
         expect { cloud_io.delete(objects) }.not_to change { objects }
       end
 
@@ -446,12 +446,14 @@ module Backup
       end
 
       it "passes along fog_options" do
-        expect(Fog::Storage).to receive(:new).with(provider: "AWS",
-                                                   region: nil,
-                                                   aws_access_key_id: "my_key",
-                                                   aws_secret_access_key: "my_secret",
-                                                   connection_options: { opt_key: "opt_value" },
-                                                   my_key: "my_value").and_return(double("response", sync_clock: nil))
+        expect(Fog::Storage).to receive(:new).with(
+          provider: "AWS",
+          region: nil,
+          aws_access_key_id: "my_key",
+          aws_secret_access_key: "my_secret",
+          connection_options: { opt_key: "opt_value" },
+          my_key: "my_value"
+        ).and_return(double("response", sync_clock: nil))
         CloudIO::S3.new(
           access_key_id: "my_key",
           secret_access_key: "my_secret",
@@ -476,30 +478,37 @@ module Backup
       before do
         allow(cloud_io).to receive(:connection).and_return(connection)
         md5_file = double
-        expect(Digest::MD5).to receive(:file).with("/src/file").and_return(md5_file)
+        expect(Digest::MD5).to receive(:file).with("/src/file")
+          .and_return(md5_file)
         expect(md5_file).to receive(:digest).and_return(:md5_digest)
-        expect(Base64).to receive(:encode64).with(:md5_digest).and_return("encoded_digest\n")
+        expect(Base64).to receive(:encode64).with(:md5_digest)
+          .and_return("encoded_digest\n")
       end
 
       it "calls put_object with Content-MD5 header" do
         expect(File).to receive(:open).with("/src/file", "r").and_yield(file)
         expect(connection).to receive(:put_object)
-          .with("my_bucket", "dest/file", file, "Content-MD5" => "encoded_digest")
+          .with("my_bucket", "dest/file", file,
+            "Content-MD5" => "encoded_digest")
         cloud_io.send(:put_object, "/src/file", "dest/file")
       end
 
       it "fails after retries" do
-        expect(File).to receive(:open).twice.with("/src/file", "r").and_yield(file)
+        expect(File).to receive(:open).twice.with("/src/file", "r")
+          .and_yield(file)
         expect(connection).to receive(:put_object).once
-          .with("my_bucket", "dest/file", file, "Content-MD5" => "encoded_digest")
+          .with("my_bucket", "dest/file", file,
+            "Content-MD5" => "encoded_digest")
           .and_raise("error1")
         expect(connection).to receive(:put_object).once
-          .with("my_bucket", "dest/file", file, "Content-MD5" => "encoded_digest")
+          .with("my_bucket", "dest/file", file,
+            "Content-MD5" => "encoded_digest")
           .and_raise("error2")
 
         expect do
           cloud_io.send(:put_object, "/src/file", "dest/file")
-        end.to raise_error CloudIO::Error, "CloudIO::Error: Max Retries (1) Exceeded!\n" \
+        end.to raise_error CloudIO::Error,
+          "CloudIO::Error: Max Retries (1) Exceeded!\n" \
           "  Operation: PUT 'my_bucket/dest/file'\n" \
           "  Be sure to check the log messages for each retry attempt.\n" \
           "--- Wrapped Exception ---\n" \
@@ -548,7 +557,8 @@ module Backup
 
       before do
         allow(cloud_io).to receive(:connection).and_return(connection)
-        expect(Logger).to receive(:info).with("  Initiate Multipart 'my_bucket/dest/file'")
+        expect(Logger).to receive(:info)
+          .with("  Initiate Multipart 'my_bucket/dest/file'")
       end
 
       it "initiates multipart upload with retries" do
@@ -594,10 +604,14 @@ module Backup
       let(:file_size) { chunk_bytes + 250 }
       let(:chunk_a) { "a" * chunk_bytes }
       let(:encoded_digest_a) { "ebKBBg0ze5srhMzzkK3PdA==" }
-      let(:chunk_a_resp) { double("response", headers: { "ETag" => "chunk_a_etag" }) }
+      let(:chunk_a_resp) do
+        double("response", headers: { "ETag" => "chunk_a_etag" })
+      end
       let(:chunk_b) { "b" * 250 }
       let(:encoded_digest_b) { "OCttLDka1ocamHgkHvZMyQ==" }
-      let(:chunk_b_resp) { double("response", headers: { "ETag" => "chunk_b_etag" }) }
+      let(:chunk_b_resp) do
+        double("response", headers: { "ETag" => "chunk_b_etag" })
+      end
       let(:file) { StringIO.new(chunk_a + chunk_b) }
 
       before do
@@ -630,7 +644,7 @@ module Backup
         expect(
           cloud_io.send(:upload_parts,
             "/src/file", "dest/file", 1234, chunk_bytes, file_size)
-        ).to eq ["chunk_a_etag", "chunk_b_etag"]
+        ).to eq %w[chunk_a_etag chunk_b_etag]
 
         expect(Logger.messages.map(&:lines).join("\n")).to eq(
           "  Uploading 2 Parts...\n" \
@@ -645,7 +659,8 @@ module Backup
         expect(File).to receive(:open).with("/src/file", "r").and_yield(file)
         allow(Digest::MD5).to receive(:digest)
         allow(Base64).to receive(:encode64).and_return("")
-        allow(connection).to receive(:upload_part).and_return(double("response", headers: {}))
+        allow(connection).to receive(:upload_part)
+          .and_return(double("response", headers: {}))
 
         cloud_io.send(:upload_parts,
           "/src/file", "dest/file", 1234, chunk_bytes, file_size)
@@ -724,7 +739,8 @@ module Backup
 
         expect do
           cloud_io.send(:complete_multipart, "dest/file", 1234, [:parts])
-        end.to raise_error CloudIO::Error, "CloudIO::Error: Max Retries (1) Exceeded!\n" \
+        end.to raise_error CloudIO::Error,
+          "CloudIO::Error: Max Retries (1) Exceeded!\n" \
           "  Operation: POST 'my_bucket/dest/file' (Complete)\n" \
           "  Be sure to check the log messages for each retry attempt.\n" \
           "--- Wrapped Exception ---\n" \
@@ -802,9 +818,11 @@ module Backup
 
       describe "#encryption" do
         it "returns the algorithm used for server-side encryption" do
-          expect(cloud_io).to receive(:head_object).once.with(object).and_return(
-            double("response", headers: { "x-amz-server-side-encryption" => "AES256" })
-          )
+          expect(cloud_io).to receive(:head_object).once.with(object)
+            .and_return(
+              double("response",
+                headers: { "x-amz-server-side-encryption" => "AES256" })
+            )
           expect(object.encryption).to eq "AES256"
           expect(object.encryption).to eq "AES256"
         end

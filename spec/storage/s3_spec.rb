@@ -93,13 +93,13 @@ module Backup
 
       it "configures the storage with values passed as frozen strings" do
         storage = Storage::S3.new(model, :my_id) do |s3|
-          s3.access_key_id      = "my_access_key_id".freeze
-          s3.secret_access_key  = "my_secret_access_key".freeze
-          s3.bucket             = "my_bucket".freeze
-          s3.region             = "my_region".freeze
-          s3.path               = "my/path".freeze
-          s3.encryption         = "aes256".freeze
-          s3.fog_options        = { my_key: "my_value".freeze }
+          s3.access_key_id      = "my_access_key_id"
+          s3.secret_access_key  = "my_secret_access_key"
+          s3.bucket             = "my_bucket"
+          s3.region             = "my_region"
+          s3.path               = "my/path"
+          s3.encryption         = "aes256"
+          s3.fog_options        = { my_key: "my_value" }
         end
 
         expect(storage.storage_id).to eq "my_id"
@@ -119,7 +119,7 @@ module Backup
             pre_config.call(s3)
             s3.bucket = nil
           end
-        end.to raise_error StandardError, /are all required/
+        end.to raise_error StandardError, %r{are all required}
       end
 
       context "when using AWS IAM profile" do
@@ -141,7 +141,7 @@ module Backup
               pre_config.call(s3)
               s3.access_key_id = nil
             end
-          end.to raise_error StandardError, /are all required/
+          end.to raise_error StandardError, %r{are all required}
         end
 
         it "requires secret_access_key" do
@@ -151,7 +151,7 @@ module Backup
               pre_config.call(s3)
               s3.secret_access_key = nil
             end
-          end.to raise_error StandardError, /are all required/
+          end.to raise_error StandardError, %r{are all required}
         end
       end
 
@@ -181,7 +181,7 @@ module Backup
             pre_config.call(s3)
             s3.chunk_size = 4
           end
-        end.to raise_error StandardError, /must be between 5 and 5120/
+        end.to raise_error StandardError, %r{must be between 5 and 5120}
       end
 
       it "validates chunk_size maximum" do
@@ -191,7 +191,7 @@ module Backup
             pre_config.call(s3)
             s3.chunk_size = 5121
           end
-        end.to raise_error StandardError, /must be between 5 and 5120/
+        end.to raise_error StandardError, %r{must be between 5 and 5120}
       end
 
       it "validates encryption" do
@@ -201,7 +201,7 @@ module Backup
             pre_config.call(s3)
             s3.encryption = :aes512
           end
-        end.to raise_error StandardError, /must be :aes256 or nil/
+        end.to raise_error StandardError, %r{must be :aes256 or nil}
       end
 
       it "validates storage_class" do
@@ -211,7 +211,8 @@ module Backup
             pre_config.call(s3)
             s3.storage_class = :glacier
           end
-        end.to raise_error StandardError, /must be :standard or :standard_ia or :reduced_redundancy/
+        end.to raise_error StandardError,
+          %r{must be :standard or :standard_ia or :reduced_redundancy}
       end
     end # describe '#initialize'
 

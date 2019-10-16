@@ -81,7 +81,7 @@ describe "Backup::Packager" do
   describe "#procedure" do
     module Fake
       def self.stack_trace
-        @stack ||= []
+        @stack_trace ||= []
       end
       class Encryptor
         def encrypt_with

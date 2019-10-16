@@ -262,7 +262,7 @@ module Backup
 
       it "writes the given paths to a tempfile" do
         archive.send(:with_files_from, paths) do |files_from|
-          path = files_from.match(/-T '(.*)'/)[1]
+          path = files_from.match(%r{-T '(.*)'})[1]
           expect(File.read(path)).to eq "this/path\n/that/path\n"
         end
       end

@@ -363,13 +363,13 @@ describe "Backup::Model" do
       it "should raise an error if chunk_size is not an Integer" do
         expect do
           model.split_into_chunks_of("345", 2)
-        end.to raise_error Backup::Model::Error, /must be Integers/
+        end.to raise_error Backup::Model::Error, %r{must be Integers}
       end
 
       it "should raise an error if suffix_size is not an Integer" do
         expect do
           model.split_into_chunks_of(345, "2")
-        end.to raise_error Backup::Model::Error, /must be Integers/
+        end.to raise_error Backup::Model::Error, %r{must be Integers}
       end
     end
   end # describe 'DSL Methods'
@@ -620,15 +620,17 @@ describe "Backup::Model" do
     it "returns a string representing the elapsed time" do
       Timecop.freeze do
         allow(model).to receive(:finished_at).and_return(Time.now)
-        { 0       => "00:00:00", 1       => "00:00:01", 59      => "00:00:59",
-          60      => "00:01:00", 61      => "00:01:01", 119     => "00:01:59",
-          3540    => "00:59:00", 3541    => "00:59:01", 3599    => "00:59:59",
-          3600    => "01:00:00", 3601    => "01:00:01", 3659    => "01:00:59",
-          3660    => "01:01:00", 3661    => "01:01:01", 3719    => "01:01:59",
-          7140    => "01:59:00", 7141    => "01:59:01", 7199    => "01:59:59",
-          212_400  => "59:00:00", 212_401  => "59:00:01", 212_459  => "59:00:59",
-          212_460  => "59:01:00", 212_461  => "59:01:01", 212_519  => "59:01:59",
-          215_940  => "59:59:00", 215_941  => "59:59:01", 215_999  => "59:59:59" }.each do |duration, expected|
+        {
+          0 => "00:00:00", 1 => "00:00:01", 59 => "00:00:59",
+          60 => "00:01:00", 61 => "00:01:01", 119 => "00:01:59",
+          3540 => "00:59:00", 3541    => "00:59:01", 3599    => "00:59:59",
+          3600 => "01:00:00", 3601    => "01:00:01", 3659    => "01:00:59",
+          3660 => "01:01:00", 3661    => "01:01:01", 3719    => "01:01:59",
+          7140 => "01:59:00", 7141    => "01:59:01", 7199    => "01:59:59",
+          212_400 => "59:00:00", 212_401  => "59:00:01", 212_459  => "59:00:59",
+          212_460 => "59:01:00", 212_461  => "59:01:01", 212_519  => "59:01:59",
+          215_940 => "59:59:00", 215_941  => "59:59:01", 215_999  => "59:59:59"
+        }.each do |duration, expected|
           allow(model).to receive(:started_at).and_return(Time.now - duration)
           expect(model.duration).to eq(expected)
         end
@@ -750,13 +752,20 @@ describe "Backup::Model" do
           expect(storage_two).to receive(:perform!).and_raise "Different error"
           expect(storage_three).to receive(:perform!).and_raise "Another error"
 
-          expected_messages = [/\ADifferent error\z/, /.*/, /\AAnother error\z/, /.*/] # every other invocation contains a stack trace
+          # every other invocation contains a stack trace
+          expected_messages = [
+            %r{\ADifferent error\z}, %r{.*},
+            %r{\AAnother error\z},
+            %r{.*}
+          ]
 
-          expect(Backup::Logger).to receive(:error).ordered.exactly(4).times do |err|
+          expect(Backup::Logger).to receive(:error)
+            .ordered.exactly(4).times do |err|
             err.to_s =~ expected_messages.shift
           end
 
-          expect { model.send(:store!) }.to raise_error StandardError, "Storage error"
+          expect { model.send(:store!) }.to raise_error StandardError,
+            "Storage error"
         end
       end
     end
@@ -804,9 +813,9 @@ describe "Backup::Model" do
       end
     end
 
-    context "when name is given as a module defined under Backup::Config::DSL" do
-      # this is necessary since the specs in spec/config/dsl_spec.rb
-      # remove all the constants from Backup::Config::DSL as part of those tests.
+    context "when name is given as a module defined in Backup::Config::DSL" do
+      # this is necessary since the specs in spec/config/dsl_spec.rb remove all
+      # the constants from Backup::Config::DSL as part of those tests.
       before(:context) do
         class Backup::Config::DSL
           module TestScope
@@ -915,13 +924,13 @@ describe "Backup::Model" do
         before do
           allow(model).to receive(:exit_status).and_return(2)
           allow(model).to receive(:exception).and_return(StandardError.new("non-fatal error"))
-          allow(error_a).to receive(:backtrace).and_return(["many", "backtrace", "lines"])
+          allow(error_a).to receive(:backtrace).and_return(%w[many backtrace lines])
         end
 
         it "logs that the backup failed with a non-fatal exception" do
           expect(Backup::Model::Error).to receive(:wrap).ordered do |err, msg|
             expect(err.message).to eq("non-fatal error")
-            expect(msg).to match(/Backup for test label \(test_trigger\) Failed!/)
+            expect(msg).to match(%r{Backup for test label \(test_trigger\) Failed!})
           end.and_return(error_a)
           expect(Backup::Logger).to receive(:error).ordered.with(error_a)
           expect(Backup::Logger).to receive(:error).ordered.with(
@@ -940,13 +949,13 @@ describe "Backup::Model" do
         before do
           allow(model).to receive(:exit_status).and_return(3)
           allow(model).to receive(:exception).and_return(Exception.new("fatal error"))
-          allow(error_a).to receive(:backtrace).and_return(["many", "backtrace", "lines"])
+          allow(error_a).to receive(:backtrace).and_return(%w[many backtrace lines])
         end
 
         it "logs that the backup failed with a fatal exception" do
           expect(Backup::Model::FatalError).to receive(:wrap).ordered do |err, msg|
             expect(err.message).to eq("fatal error")
-            expect(msg).to match(/Backup for test label \(test_trigger\) Failed!/)
+            expect(msg).to match(%r{Backup for test label \(test_trigger\) Failed!})
           end.and_return(error_a)
           expect(Backup::Logger).to receive(:error).ordered.with(error_a)
           expect(Backup::Logger).to receive(:error).ordered.with(

@@ -133,8 +133,8 @@ describe Backup::Encryptor::GPG do
     end
 
     it "should remove any tempdirs and clear all variables" do
-      encryptor.instance_variable_set(:@tempdirs, ["a", "b"])
-      expect(FileUtils).to receive(:rm_rf).with(["a", "b"], secure: true)
+      encryptor.instance_variable_set(:@tempdirs, %w[a b])
+      expect(FileUtils).to receive(:rm_rf).with(%w[a b], secure: true)
 
       encryptor.instance_variable_set(:@base_options, true)
       encryptor.instance_variable_set(:@mode_options, true)
@@ -547,7 +547,7 @@ describe Backup::Encryptor::GPG do
   describe "#asymmetric_options" do
     context "when recipients are found" do
       it "should return the options" do
-        allow(encryptor).to receive(:user_recipients).and_return(["keyid1", "keyid2"])
+        allow(encryptor).to receive(:user_recipients).and_return(%w[keyid1 keyid2])
         expect(encryptor.send(:asymmetric_options)).to eq(
           "-e --trust-model always -r 'keyid1' -r 'keyid2'"
         )
@@ -567,7 +567,7 @@ describe Backup::Encryptor::GPG do
     context "when an Array of :recipients are given" do
       it "should return the recipient list and cache the result" do
         expect(encryptor).to receive(:recipients).and_return(
-          ["key_id1", "key_id2", "key_id3", "key_id4"]
+          %w[key_id1 key_id2 key_id3 key_id4]
         )
         expect(encryptor).to receive(:clean_identifier).with("key_id1").and_return("key_id1")
         expect(encryptor).to receive(:clean_identifier).with("key_id2").and_return("key_id2")
@@ -575,7 +575,7 @@ describe Backup::Encryptor::GPG do
         expect(encryptor).to receive(:clean_identifier).with("key_id4").and_return("key_id4")
 
         # key_id1 and key_id3 will be found in the system
-        allow(encryptor).to receive(:system_identifiers).and_return(["key_id1", "key_id3"])
+        allow(encryptor).to receive(:system_identifiers).and_return(%w[key_id1 key_id3])
 
         # key_id2 will be imported (key_id returned)
         allow(encryptor).to receive(:user_keys).and_return("key_id2" => "a public key")
@@ -586,11 +586,11 @@ describe Backup::Encryptor::GPG do
         # key_id4 will not be found in user_keys, so a warning will be logged.
         # This will return nil into the array, which will be compacted out.
         expect(Backup::Logger).to receive(:warn) do |msg|
-          expect(msg).to match(/'key_id4'/)
+          expect(msg).to match(%r{'key_id4'})
         end
 
         encryptor.instance_variable_set(:@user_recipients, nil)
-        recipient_list = ["key_id1", "key_id2", "key_id3"]
+        recipient_list = %w[key_id1 key_id2 key_id3]
         expect(encryptor.send(:user_recipients)).to eq(recipient_list)
         # results are cached (expectations would fail if called twice)
         expect(encryptor.send(:user_recipients)).to eq(recipient_list)
@@ -700,7 +700,7 @@ describe Backup::Encryptor::GPG do
 
   describe "#import_key" do
     let(:gpg_return_ok) do
-      <<-EOS.gsub(/^ +/, "")
+      <<-EOS.gsub(%r{^ +}, "")
         gpg: keyring `/tmp/.gnupg/secring.gpg' created
         gpg: keyring `/tmp/.gnupg/pubring.gpg' created
         gpg: /tmp/.gnupg/trustdb.gpg: trustdb created
@@ -710,7 +710,7 @@ describe Backup::Encryptor::GPG do
       EOS
     end
     let(:gpg_return_failed) do
-      <<-EOS.gsub(/^ +/, "")
+      <<-EOS.gsub(%r{^ +}, "")
         gpg: no valid OpenPGP data found.
         gpg: Total number processed: 0
       EOS
@@ -738,7 +738,8 @@ describe Backup::Encryptor::GPG do
 
     context "when the import is successful" do
       it "should return the long key ID" do
-        expect(Tempfile).to receive(:open).with("backup-gpg_import", "/tmp/path").and_return(tempfile)
+        expect(Tempfile).to receive(:open)
+          .with("backup-gpg_import", "/tmp/path").and_return(tempfile)
         expect(tempfile).to receive(:write).with(<<-EOS)
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.12 (GNU/Linux)
@@ -748,7 +749,7 @@ gXY+pNqaEE6cHrg+uQatVQITX8EoVJhQ9Z1mYJB+g62zqOQPe10Spb381O9y4dN/
 /ge/yL+/+R2CUrKeNF9nSA24+V4mTSqgo7sTnevDzGj4Srzs76MmkpU=
 =TU/B
 -----END PGP PUBLIC KEY BLOCK-----
-      EOS
+        EOS
 
         expect(tempfile).to receive(:close)
 
@@ -782,7 +783,7 @@ gXY+pNqaEE6cHrg+uQatVQITX8EoVJhQ9Z1mYJB+g62zqOQPe10Spb381O9y4dN/
 
   describe "#system_identifiers" do
     let(:gpg_output) do
-      <<-EOS.gsub(/^ +/, "")
+      <<-EOS.gsub(%r{^ +}, "")
         tru::1:1343402941:0:3:1:5
         pub:-:1024:1:5EFD157FFF9CFEA6:1342808803:::-:::scESC:
         fpr:::::::::72E56E48E362BB402B3344045EFD157FFF9CFEA6:

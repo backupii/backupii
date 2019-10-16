@@ -68,7 +68,7 @@ module Backup
             redis.mode = "sync" # symbol required
           end
         end.to raise_error(Database::Redis::Error) { |err|
-          expect(err.message).to match(/not a valid mode/)
+          expect(err.message).to match(%r{not a valid mode})
         }
       end
 
@@ -78,7 +78,7 @@ module Backup
             redis.rdb_path = nil
           end
         end.to raise_error(Database::Redis::Error) { |err|
-          expect(err.message).to match(/`rdb_path` must be set/)
+          expect(err.message).to match(%r{`rdb_path` must be set})
         }
       end
     end # describe '#initialize'
@@ -220,8 +220,8 @@ module Backup
         expect do
           db.send(:save!)
         end.to raise_error(Database::Redis::Error) { |err|
-          expect(err.message).to match(/Failed to invoke the `SAVE` command/)
-          expect(err.message).to match(/Response was: No OK Returned/)
+          expect(err.message).to match(%r{Failed to invoke the `SAVE` command})
+          expect(err.message).to match(%r{Response was: No OK Returned})
         }
       end
 
@@ -232,9 +232,9 @@ module Backup
         expect do
           db.send(:save!)
         end.to raise_error(Database::Redis::Error) { |err|
-          expect(err.message).to match(/Failed to invoke the `SAVE` command/)
+          expect(err.message).to match(%r{Failed to invoke the `SAVE` command})
           expect(err.message).to match(
-            /Response was: Background save already in progress/
+            %r{Response was: Background save already in progress}
           )
         }
       end

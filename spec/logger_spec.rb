@@ -26,10 +26,10 @@ module Backup
       describe "#initialize" do
         it "returns a new message object" do
           Timecop.freeze do
-            msg = Logger::Message.new(Time.now, :log_level, ["message", "lines"])
+            msg = Logger::Message.new(Time.now, :log_level, %w[message lines])
             expect(msg.time).to eq(Time.now)
             expect(msg.level).to eq(:log_level)
-            expect(msg.lines).to eq(["message", "lines"])
+            expect(msg.lines).to eq(%w[message lines])
           end
         end
       end
@@ -38,7 +38,7 @@ module Backup
         it "returns the message lines formatted" do
           Timecop.freeze do
             timestamp = Time.now.strftime("%Y/%m/%d %H:%M:%S")
-            msg = Logger::Message.new(Time.now, :log_level, ["message", "lines"])
+            msg = Logger::Message.new(Time.now, :log_level, %w[message lines])
             expect(msg.formatted_lines).to eq([
               "[#{timestamp}][log_level] message",
               "[#{timestamp}][log_level] lines"
@@ -69,13 +69,13 @@ module Backup
         it "returns true if message lines match the given matchers" do
           expect(message.matches?(["not", "one of"])).to be(true)
           expect(message.matches?(["not", "message\nline two"])).to be(true)
-          expect(message.matches?(["not", /^line one/])).to be(true)
-          expect(message.matches?(["not", /two \w+ message$/])).to be(true)
+          expect(message.matches?(["not", %r{^line one}])).to be(true)
+          expect(message.matches?(["not", %r{two \w+ message$}])).to be(true)
         end
 
         it "returns false if no match is found" do
-          expect(message.matches?(["not", "three"])).to be(false)
-          expect(message.matches?(["not", /three/])).to be(false)
+          expect(message.matches?(%w[not three])).to be(false)
+          expect(message.matches?(["not", %r{three}])).to be(false)
         end
       end
     end # describe Logger::Message
@@ -165,7 +165,7 @@ module Backup
         before do
           Logger.configure do
             ignore_warning "one\nline two"
-            ignore_warning(/line\nline two/)
+            ignore_warning(%r{line\nline two})
           end
         end
 

@@ -95,7 +95,7 @@ describe "Backup::Pipeline" do
 
       context "when commands within the pipeline are not successful" do
         before do
-          pipeline.instance_variable_set(:@commands, ["first", "second", "third"])
+          pipeline.instance_variable_set(:@commands, %w[first second third])
           pipeline.instance_variable_set(:@success_codes, [[0, 1], [0, 3], [0]])
           expect(stderr).to receive(:read).and_return("stderr output\n")
           allow(pipeline).to receive(:stderr_messages).and_return("success? should be false")
@@ -213,12 +213,12 @@ describe "Backup::Pipeline" do
       end
 
       it "should output #stderr_messages and formatted system error messages" do
-        expect(pipeline.error_messages).to match(/
+        expect(pipeline.error_messages).to match(%r{
           stderr\smessages\n
           The\sfollowing\ssystem\serrors\swere\sreturned:\n
-          #{ sys_err }:\s(.*?)\sfirst\serror\n
-          #{ sys_err }:\s(.*?)\ssecond\serror
-        /x)
+          #{sys_err}:\s(.*?)\sfirst\serror\n
+          #{sys_err}:\s(.*?)\ssecond\serror
+        }x)
       end
     end
 
@@ -228,12 +228,12 @@ describe "Backup::Pipeline" do
       end
 
       it "should only output the formatted system error messages" do
-        expect(pipeline.error_messages).to match(/
+        expect(pipeline.error_messages).to match(%r{
           stderr\smessages\n
           The\sfollowing\ssystem\serrors\swere\sreturned:\n
-          #{ sys_err }:\s(.*?)\sfirst\serror\n
-          #{ sys_err }:\s(.*?)\ssecond\serror
-        /x)
+          #{sys_err}:\s(.*?)\sfirst\serror\n
+          #{sys_err}:\s(.*?)\ssecond\serror
+        }x)
       end
     end
   end # describe '#error_messages'

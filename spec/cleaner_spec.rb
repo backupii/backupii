@@ -8,7 +8,7 @@ module Backup
 
     describe "#prepare" do
       let(:error_tail) do
-        <<-EOS.gsub(/^ +/, "  ")
+        <<-EOS.gsub(%r{^ +}, "  ")
 
           Please check the log for messages and/or your notifications
           concerning this backup: 'test label (test_trigger)'
@@ -47,7 +47,7 @@ module Backup
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary packaging folder still exists!
               '#{File.join(Config.tmp_path, "test_trigger")}'
@@ -68,7 +68,7 @@ module Backup
 
           expect(Cleaner).to receive(:package_files_for)
             .with("test_trigger")
-            .and_return(["file1", "file2"])
+            .and_return(%w[file1 file2])
 
           expect(FileUtils).to receive(:rm_rf).never
           expect(FileUtils).to receive(:rm_f).with("file1")
@@ -76,7 +76,7 @@ module Backup
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary backup folder '#{Config.tmp_path}'
               appears to contain the package files from the previous backup!
@@ -99,7 +99,7 @@ module Backup
 
           expect(Cleaner).to receive(:package_files_for)
             .with("test_trigger")
-            .and_return(["file1", "file2"])
+            .and_return(%w[file1 file2])
 
           expect(FileUtils).to receive(:rm_rf)
             .with(File.join(Config.tmp_path, "test_trigger"))
@@ -109,7 +109,7 @@ module Backup
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary packaging folder still exists!
               '#{File.join(Config.tmp_path, "test_trigger")}'
@@ -140,7 +140,7 @@ module Backup
 
     describe "#remove_package" do
       it "removes the package files" do
-        package = double(Backup::Package, filenames: ["file1", "file2"])
+        package = double(Backup::Package, filenames: %w[file1 file2])
         expect(Backup::Logger).to receive(:info).with("Cleaning up the package files...")
         expect(FileUtils).to receive(:rm_f).with(File.join(Config.tmp_path, "file1"))
         expect(FileUtils).to receive(:rm_f).with(File.join(Config.tmp_path, "file2"))
@@ -150,7 +150,7 @@ module Backup
 
     describe "#warnings" do
       let(:error_tail) do
-        <<-EOS.gsub(/^ +/, "  ")
+        <<-EOS.gsub(%r{^ +}, "  ")
 
           Make sure you check these files before the next scheduled backup for
           'test label (test_trigger)'
@@ -182,7 +182,7 @@ module Backup
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary packaging folder still exists!
               '#{File.join(Config.tmp_path, "test_trigger")}'
@@ -203,11 +203,11 @@ module Backup
 
           expect(Cleaner).to receive(:package_files_for)
             .with("test_trigger")
-            .and_return(["file1", "file2"])
+            .and_return(%w[file1 file2])
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary backup folder '#{Config.tmp_path}'
               appears to contain the backup files which were to be stored:
@@ -229,11 +229,11 @@ module Backup
 
           expect(Cleaner).to receive(:package_files_for)
             .with("test_trigger")
-            .and_return(["file1", "file2"])
+            .and_return(%w[file1 file2])
 
           expect(Logger).to receive(:warn) do |err|
             expect(err).to be_an_instance_of Cleaner::Error
-            expect(err.message).to eq(<<-EOS.gsub(/^ +/, "  ").strip)
+            expect(err.message).to eq(<<-EOS.gsub(%r{^ +}, "  ").strip)
               Cleaner::Error: Cleanup Warning
               The temporary packaging folder still exists!
               '#{File.join(Config.tmp_path, "test_trigger")}'

@@ -136,7 +136,7 @@ module Backup
             expect(sent_message.attachments[filename].read)
               .to eq "line 1\nline 2\nline 3"
             expect(sent_message.text_part).to be_an_instance_of ::Mail::Part
-            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Completed Successfully!
 
@@ -154,7 +154,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
 
@@ -167,7 +167,7 @@ module Backup
             expect(sent_message.multipart?).to eq(false)
             expect(sent_message.has_attachments?).to eq(false)
             expect(sent_message.body).to be_an_instance_of ::Mail::Body
-            expect(sent_message.body.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.body.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Completed Successfully!
 
@@ -183,7 +183,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
       end # context 'when status is :success'
@@ -201,7 +201,7 @@ module Backup
             expect(sent_message.attachments[filename].read)
               .to eq "line 1\nline 2\nline 3"
             expect(sent_message.text_part).to be_an_instance_of ::Mail::Part
-            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Completed Successfully (with Warnings)!
 
@@ -219,7 +219,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
 
@@ -234,7 +234,7 @@ module Backup
             expect(sent_message.multipart?).to eq(false)
             expect(sent_message.has_attachments?).to eq(false)
             expect(sent_message.body).to be_an_instance_of ::Mail::Body
-            expect(sent_message.body.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.body.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Completed Successfully (with Warnings)!
 
@@ -250,7 +250,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
       end # context 'when status is :warning'
@@ -268,7 +268,7 @@ module Backup
             expect(sent_message.attachments[filename].read)
               .to eq "line 1\nline 2\nline 3"
             expect(sent_message.text_part).to be_an_instance_of ::Mail::Part
-            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.text_part.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Failed!
 
@@ -286,7 +286,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
 
@@ -301,7 +301,7 @@ module Backup
             expect(sent_message.multipart?).to eq(false)
             expect(sent_message.has_attachments?).to eq(false)
             expect(sent_message.body).to be_an_instance_of ::Mail::Body
-            expect(sent_message.body.decoded).to eq <<-EOS.gsub(/^ +/, "")
+            expect(sent_message.body.decoded).to eq <<-EOS.gsub(%r{^ +}, "")
 
             Backup Failed!
 
@@ -317,7 +317,7 @@ module Backup
             Project Home:  https://github.com/backup/backup
             Documentation: http://backup.github.io/backup
             Issue Tracker: https://github.com/backup/backup/issues
-          EOS
+            EOS
           end
         end
       end # context 'when status is :failure'

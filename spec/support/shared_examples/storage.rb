@@ -136,7 +136,7 @@ shared_examples "a storage that cycles" do
       expect(storage).to receive(:remove!).with(pkg_b).and_raise("error message")
       expect(storage).to receive(:remove!).with(pkg_c)
 
-      allow(pkg_b).to receive(:filenames).and_return(["file1", "file2"])
+      allow(pkg_b).to receive(:filenames).and_return(%w[file1 file2])
       expect(Backup::Logger).to receive(:warn) do |err|
         expect(err).to be_an_instance_of Backup::Storage::Cycler::Error
         expect(err.message).to include(

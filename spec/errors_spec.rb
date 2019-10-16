@@ -5,7 +5,7 @@ require "spec_helper"
 module Backup
   describe "Backup Errors" do
     shared_examples "a nested exception" do
-      let(:class_name) { described_class.name.sub(/^Backup::/, "") }
+      let(:class_name) { described_class.name.sub(%r{^Backup::}, "") }
 
       context "with stubbed constants" do
         before do
@@ -30,7 +30,7 @@ module Backup
                 an error occurred in Zone A
 
                 the following error should give a reason
-              EOS
+                  EOS
                 end
               rescue Exception => err
                 raise ErrorB.wrap(err)
@@ -70,7 +70,7 @@ module Backup
           the above blank line will remain
           the blank line below will not
 
-        EOS
+            EOS
             expect(err.message).to eq(
               "#{class_name}: error message\n" \
               "  this is a multi-line message\n" \
@@ -125,7 +125,7 @@ module Backup
             the above blank line will remain
             the blank line below will not
 
-          EOS
+              EOS
             end.to raise_error described_class, "#{class_name}: error message\n" \
               "  this is a multi-line message\n" \
               "  \n" \
@@ -192,7 +192,7 @@ module Backup
             the above blank line will remain
             the blank line below will not
 
-          EOS
+              EOS
               raise err
             end.to raise_error { |err|
               expect(err.message).to eq(
@@ -321,7 +321,7 @@ module Backup
           error message
 
           this error is wrapping another error
-        EOS
+            EOS
             expect(err.message).to eq(
               "#{class_name}: error message\n" \
               "  \n" \
@@ -344,7 +344,7 @@ module Backup
               error message
 
               this error is wrapping another error
-            EOS
+                EOS
               end
             end.to raise_error described_class, "#{class_name}: error message\n" \
               "  \n" \
@@ -414,8 +414,8 @@ module Backup
               begin
                 err = StandardError.new "foo"
                 raise described_class.wrap(err), nil, ["bt"]
-              rescue Exception => err2
-                raise err2, "bar"
+              rescue Exception => err
+                raise err, "bar"
               end
             end.to raise_error { |err|
               expect(err.backtrace).to eq ["bt"]

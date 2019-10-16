@@ -72,7 +72,7 @@ module Backup
       end
 
       let(:expected_titles) do
-        ["Job", "Started", "Finished", "Duration", "Version"]
+        %w[Job Started Finished Duration Version]
       end
 
       let(:expected_titles_with_log) do
@@ -92,7 +92,8 @@ module Backup
       context "when status is :success" do
         it "sends a success message" do
           expect(Excon).to receive(:post) do |given_url, options|
-            expected_excon_params(given_url, options, text: "[Backup::Success] test label (test_trigger)")
+            expected_excon_params(given_url, options,
+              text: "[Backup::Success] test label (test_trigger)")
           end
 
           notifier.send(:notify!, :success)
@@ -102,7 +103,8 @@ module Backup
       context "when status is :warning" do
         it "sends a warning message" do
           expect(Excon).to receive(:post) do |given_url, options|
-            expected_excon_params(given_url, options, { text: "[Backup::Warning] test label (test_trigger)" }, true)
+            expected_excon_params(given_url, options,
+              { text: "[Backup::Warning] test label (test_trigger)" }, true)
           end
 
           notifier.send(:notify!, :warning)
@@ -112,7 +114,8 @@ module Backup
       context "when status is :failure" do
         it "sends a failure message" do
           expect(Excon).to receive(:post) do |given_url, options|
-            expected_excon_params(given_url, options, { text: "[Backup::Failure] test label (test_trigger)" }, true)
+            expected_excon_params(given_url, options,
+              { text: "[Backup::Failure] test label (test_trigger)" }, true)
           end
 
           notifier.send(:notify!, :failure)
@@ -131,10 +134,11 @@ module Backup
 
         it "sends message with optional parameters" do
           expect(Excon).to receive(:post) do |given_url, options|
-            expected_excon_params(given_url, options, text: "[Backup::Success] test label (test_trigger)",
-                                    channel: "my_channel",
-                                    username: "my_username",
-                                    icon_emoji: ":vhs:")
+            expected_excon_params(given_url, options,
+              text: "[Backup::Success] test label (test_trigger)",
+              channel: "my_channel",
+              username: "my_username",
+              icon_emoji: ":vhs:")
           end
 
           notifier.send(:notify!, :success)

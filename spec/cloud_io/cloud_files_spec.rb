@@ -3,7 +3,7 @@
 require "spec_helper"
 require "backup/cloud_io/cloud_files"
 
-module Backup # rubocop:disable Metrics/ModuleLength
+module Backup
   describe CloudIO::CloudFiles do
     let(:connection) { double }
 
@@ -287,7 +287,7 @@ module Backup # rubocop:disable Metrics/ModuleLength
         )
         expect(cloud_io).to receive(:with_retries).with("DELETE Multiple Objects").and_yield
         expect(connection).to receive(:delete_multiple_objects)
-          .with("my_container", ["obj_a_name", "obj_b_name"]).and_return(resp_ok)
+          .with("my_container", %w[obj_a_name obj_b_name]).and_return(resp_ok)
 
         objects = [object_a, object_b]
         expect { cloud_io.delete(objects) }.not_to change { objects.map(&:inspect) }
@@ -303,9 +303,9 @@ module Backup # rubocop:disable Metrics/ModuleLength
       it "accepts multiple names" do
         expect(cloud_io).to receive(:with_retries).with("DELETE Multiple Objects").and_yield
         expect(connection).to receive(:delete_multiple_objects)
-          .with("my_container", ["obj_a_name", "obj_b_name"]).and_return(resp_ok)
+          .with("my_container", %w[obj_a_name obj_b_name]).and_return(resp_ok)
 
-        names = ["obj_a_name", "obj_b_name"]
+        names = %w[obj_a_name obj_b_name]
         expect { cloud_io.delete(names) }.not_to change { names }
       end
 
@@ -878,14 +878,17 @@ module Backup # rubocop:disable Metrics/ModuleLength
         it "returns true when object is an SLO" do
           expect(cloud_io).to receive(:head_object).once
             .with(object)
-            .and_return(double("response", headers: { "X-Static-Large-Object" => "True" }))
+            .and_return(double("response",
+              headers: { "X-Static-Large-Object" => "True" }))
 
           expect(object.slo?).to be(true)
           expect(object.slo?).to be(true)
         end
 
         it "returns false when object is not an SLO" do
-          expect(cloud_io).to receive(:head_object).with(object).and_return(double("response", headers: {}))
+          expect(cloud_io).to receive(:head_object)
+            .with(object)
+            .and_return(double("response", headers: {}))
           expect(object.slo?).to be(false)
         end
       end
@@ -894,14 +897,17 @@ module Backup # rubocop:disable Metrics/ModuleLength
         it "returns true when object has X-Delete-At set" do
           expect(cloud_io).to receive(:head_object).once
             .with(object)
-            .and_return(double("response", headers: { "X-Delete-At" => "12345" }))
+            .and_return(double("response",
+              headers: { "X-Delete-At" => "12345" }))
 
           expect(object.marked_for_deletion?).to be(true)
           expect(object.marked_for_deletion?).to be(true)
         end
 
         it "returns false when object does not have X-Delete-At set" do
-          expect(cloud_io).to receive(:head_object).with(object).and_return(double("response", headers: {}))
+          expect(cloud_io).to receive(:head_object)
+            .with(object)
+            .and_return(double("response", headers: {}))
           expect(object.marked_for_deletion?).to be(false)
         end
       end

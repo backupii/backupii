@@ -11,7 +11,7 @@ module Backup
         end
         expect(described_class.constants).to be_empty
 
-        load File.expand_path("../../../lib/backup/config/dsl.rb", __FILE__)
+        load File.expand_path("../../lib/backup/config/dsl.rb", __dir__)
 
         expect(described_class.const_defined?("MySQL")).to eq(true)
         expect(described_class.const_defined?("RSync")).to eq(true)
@@ -24,7 +24,7 @@ module Backup
 
       context "when given an array of constant names" do
         it "creates modules for the given scope" do
-          described_class.send(:create_modules, TestScope, ["Foo", "Bar"])
+          described_class.send(:create_modules, TestScope, %w[Foo Bar])
           expect(TestScope.const_defined?("Foo")).to eq(true)
           expect(TestScope.const_defined?("Bar")).to eq(true)
           expect(TestScope::Foo.class).to eq(Module)

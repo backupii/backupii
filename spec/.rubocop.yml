@@ -15,3 +15,8 @@ Lint/AmbiguousBlockAssociation:
 Layout/IndentHeredoc:
   Enabled: false
 
+Style/EvalWithLocation:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
