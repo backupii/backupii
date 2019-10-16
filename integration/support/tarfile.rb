@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 module BackupSpec
   class TarFile
@@ -13,7 +13,7 @@ module BackupSpec
     def manifest
       @manifest ||= begin
         if File.exist?(path.to_s)
-          `#{ utility(:tar) } -tvf #{ path } 2>/dev/null`
+          `#{utility(:tar)} -tvf #{path} 2>/dev/null`
         else
           ""
         end
@@ -48,12 +48,12 @@ module BackupSpec
         base_path = File.dirname(path)
         filename = File.basename(path)
         Dir.chdir(base_path) do
-          `#{ utility(:tar) } -xf #{ filename } 2>/dev/null`
+          `#{utility(:tar)} -xf #{filename} 2>/dev/null`
         end
         Hash[
           contents.keys.map do |manifest_path|
             path = File.join(base_path, manifest_path.sub(%r{^\/}, ""))
-            if path =~ /\.tar.*$/
+            if path =~ %r{\.tar.*$}
               [manifest_path, self.class.new(path)]
             else
               [manifest_path, path]

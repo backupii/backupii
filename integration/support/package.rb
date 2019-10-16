@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 module BackupSpec
   class Package
@@ -47,7 +47,7 @@ module BackupSpec
 
         path = storage.send(:remote_path)
         unless path == File.expand_path(path)
-          path.sub!(/(ssh|rsync)-daemon-module/, "")
+          path.sub!(%r{(ssh|rsync)-daemon-module}, "")
           path = File.expand_path(File.join("tmp", path))
         end
         Dir[File.join(path, "#{model.trigger}.tar*")].sort
@@ -66,9 +66,9 @@ module BackupSpec
       base_dir = File.dirname(files.first)
       orig_ext = File.extname(files.first)
       base_ext = orig_ext.split("-").first
-      outfile = File.basename(files.first).sub(/#{ orig_ext }$/, base_ext)
+      outfile = File.basename(files.first).sub(%r{#{orig_ext}$}, base_ext)
       Dir.chdir(base_dir) do
-        `#{ utility(:cat) } #{ outfile }-* > #{ outfile }`
+        `#{utility(:cat)} #{outfile}-* > #{outfile}`
       end
       File.join(base_dir, outfile)
     end

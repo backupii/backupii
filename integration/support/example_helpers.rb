@@ -1,8 +1,8 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 module BackupSpec
   CONFIG_TEMPLATE = Backup::Template.new.result("cli/config")
-  PROJECT_ROOT = "/usr/src/backup".freeze
+  PROJECT_ROOT = "/usr/src/backup"
   LOCAL_STORAGE_PATH = File.join(PROJECT_ROOT, "tmp", "Storage")
 
   module ExampleHelpers
@@ -29,10 +29,10 @@ module BackupSpec
       config_path = File.dirname(config_file)
 
       unless text.to_s.empty?
-        indent = text.lines.first.match(/^ */)[0].length
+        indent = text.lines.first.match(%r{^ *})[0].length
         text = text.lines.map { |l| l[indent..-1] }.join
       end
-      config = <<-EOS.gsub(/^        /, "")
+      config = <<-EOS.gsub(%r{^        }, "")
         # encoding: utf-8
 
         Backup::Utilities.configure do
@@ -75,9 +75,9 @@ module BackupSpec
 
       create_config(nil, config_file) unless File.exist?(config_file)
 
-      indent = text.lines.first.match(/^ */)[0].length
+      indent = text.lines.first.match(%r{^ *})[0].length
       text = text.lines.map { |l| l[indent..-1] }.join
-      config = <<-EOS.gsub(/^        /, "")
+      config = <<-EOS.gsub(%r{^        }, "")
         # encoding: utf-8
 
         #{text}

@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 class FilesetBuilder
   def create(root_dir, dir_name, total, file_size)

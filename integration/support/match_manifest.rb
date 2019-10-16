@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 # Matches the contents of a TarFile (or PerformedJob.package)
 # against the given manifest.
@@ -48,7 +48,7 @@ RSpec::Matchers.define :match_manifest do |expected|
         sizes_ok =
           case size
           when "-" then true
-          when /\d+(\.\.)\d+/
+          when %r{\d+(\.\.)\d+}
             a, b = size.split("..").map(&:to_i)
             (a..b).cover? actual_size
           else
