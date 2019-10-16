@@ -18,6 +18,16 @@ See the [Performing Backups][performing-backups] page for details.
 Before you upgrade to v4.x, see the [Upgrading][upgrading] page.
 Several changes have been made which will require your attention before you run your first backup using v4.x.
 
+0.1.0
+-----
+- Rename binary to `backupii`
+- Upgrade dependencies to more recent versions
+- Add `# frozen_string_litteral: true` to all files
+
+Fork to BackupII
+----------------
+- Versioning reset to 0.1.0
+
 4.4.0
 -----
 
