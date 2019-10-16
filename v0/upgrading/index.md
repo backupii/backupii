@@ -24,7 +24,7 @@ BackupII:
 - The binary was renamed to `backupii`. Any script refering to `backup` should
   be changed to use the new name. Performing a backup is now done with `backupii
   perform -t model`
-- The default config path has changed from `~/Backup` to `~/.backupii`. If you
+- The default config path has changed from `~/Backup` to `~/BackupII`. If you
   were relying on the previous default config path, you'll need to either rename
   the folder or specify the config file path when invoking `backupii`. Example:
   `backupii check --config-file=~/Backup/config.rb`

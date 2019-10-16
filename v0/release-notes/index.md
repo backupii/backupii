@@ -21,6 +21,7 @@ Several changes have been made which will require your attention before you run 
 0.1.0
 -----
 - Rename binary to `backupii`
+- Change default root directory to `~/BackupII`
 - Upgrade dependencies to more recent versions
 - Add `# frozen_string_litteral: true` to all files
 
