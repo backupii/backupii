@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rake/clean"
 
 CLEAN.include("tmp")
@@ -38,7 +40,7 @@ end
 # - 10.0.1.rc
 # - 10.0.1.rc.1
 def valid_version?(version)
-  version =~ /\d+\.\d+\.\d+(\.(alpha|beta|rc)(\.\d+)?)?/
+  version =~ %r{\d+\.\d+\.\d+(\.(alpha|beta|rc)(\.\d+)?)?}
 end
 
 def current_branch
@@ -51,16 +53,14 @@ task :release do
   print "Enter new version: "
   new_version = $stdin.gets.chomp
 
-  unless valid_version?(new_version)
-    abort "ERROR: Invalid version number: #{new_version.inspect}"
-  end
+  abort "ERROR: Invalid version number: #{new_version.inspect}" unless valid_version?(new_version)
 
   puts "Creating new version: #{new_version}"
 
   lines = File.readlines(version_file)
   File.open(version_file, "w+") do |file|
     lines.each do |line|
-      if line =~ /VERSION =/
+      if line =~ %r{VERSION =}
         file.puts %(  VERSION = "#{new_version}")
       else
         file.write line

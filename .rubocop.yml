@@ -6,6 +6,7 @@ AllCops:
     - "Gemfile"
     - "Rakefile"
     - "backupii.gemspec"
+    - "bin/backupii"
     - "**/*.rb"
   Exclude:
     - "tmp/**/*"
@@ -17,6 +18,11 @@ AllCops:
 
 # Metrics/MethodLength:
 #   Max: 30
+
+# While we use a version of rubocop that only support ruby 2.3+, we don't want
+# to enforce it in the gemspec
+Gemspec/RequiredRubyVersion:
+  Enabled: false
 
 Metrics/ClassLength:
   Enabled: false

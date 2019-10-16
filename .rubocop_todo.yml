@@ -52,7 +52,7 @@ Lint/UnderscorePrefixedVariableName:
 # Configuration parameters: CountComments, ExcludedMethods.
 # ExcludedMethods: refine
 Metrics/BlockLength:
-  Max: 28
+  Max: 30
 
 # Offense count: 1
 # Configuration parameters: CountBlocks.
